@@ -27,6 +27,22 @@
           padding-right: 10px;
         }
       }
+      .node circle {
+        cursor: pointer;
+        stroke: #3182bd;
+        stroke-width: 1.5px;
+      }
+
+      .node text {
+        font: 10px sans-serif;
+        pointer-events: none;
+      }
+
+      line.link {
+        fill: none;
+        stroke: #9ecae1;
+        stroke-width: 1.5px;
+      }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
 
@@ -62,6 +78,12 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="span3">
+          <h3>Search for Author</h3>
+          <form>
+            First name: <input type="text" name="firstname"><br>
+            Last name: <input type="text" name="lastname"><br>
+          <a href="#" class="btn btn-primary btn-large" id="goButton">Start &raquo;</a>
+          </form>
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="nav-header">Info About The Author</li>
@@ -69,14 +91,17 @@
             </ul>
           </div><!--/.well -->
         </div><!--/span-->
+        
         <div class="span9">
           <div class="small-unit">
             <h1>Visual Nodes!</h1>
+            <div id="chart">
+            </div>
           </div>
-            </div><!--/span-->
-          </div><!--/row-->
         </div><!--/span-->
       </div><!--/row-->
+    </div><!--/span-->
+  </div><!--/row-->
 
       <hr>
 
@@ -87,8 +112,11 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="js/jquery-2.0.3.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="js/d3.v3.min.js"></script>
+    <script type="text/javascript" src="js/d3.js"></script>
     <script type="text/javascript" src="js/d3.layout.js"></script>
+    <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.27.2"></script>
+    <script src="js/d3.js1.25.0.js"></script>
+    <script src="js/graph.js"></script>
 
   </body>
 </html>
