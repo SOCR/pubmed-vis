@@ -12,7 +12,7 @@ var vis = d3.select("#chart").append("svg:svg")
     .attr("width", w)
     .attr("height", h);
 
-d3.json("graph.json", function(json) {
+d3.json("	graph.json", function(json) {
   root = json;
   update();
 });
@@ -54,6 +54,7 @@ function update() {
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
       .on("click", click)
+      .on("dblclick", dblclick)
       .call(force.drag);
 
   nodeEnter.append("svg:circle")
@@ -97,6 +98,10 @@ function click(d) {
     d._children = null;
   }
   update();
+}
+
+function dblclick(d) {
+	document.getElementById("testSize").innerHTML=d.size;
 }
 
 // Returns a list of all nodes under the root.
