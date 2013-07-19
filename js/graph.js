@@ -12,7 +12,7 @@ var vis = d3.select("#chart").append("svg:svg")
     .attr("width", w)
     .attr("height", h);
 
-d3.json("	graph.json", function(json) {
+d3.json("graph.json", function(json) {
   root = json;
   update();
 });
