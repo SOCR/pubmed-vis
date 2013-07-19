@@ -1,9 +1,9 @@
-{"name": "graph",
+{"name": "Searched Author",
      "children": [
-      {"name": "BetweennessCentrality", "size": 3534},
-      {"name": "LinkDistance", "size": 5731},
-      {"name": "MaxFlowMinCut", "size": 7840},
-      {"name": "ShortestPaths", "size": 5914},
-      {"name": "SpanningTree", "size": 3416}
+      {"name": "Co-Author 1", "size": 3534},
+      {"name": "Co-Author 2", "size": 5731},
+      {"name": "Co-Author 3", "size": 7840},
+      {"name": "Co-Author 4", "size": 5914},
+      {"name": "Co-Author 5", "size": 3416}
      ]
  }
