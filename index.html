@@ -79,6 +79,11 @@
       <div class="row-fluid">
         <div class="span3">
           <h3>Search</h3>
+          <div class="span12">
+            <div class="small-unit">
+              <p>Please enter a valid author or keyword</p>
+            </div>
+          </div>
           <form>
             <input type="text" id="inputSearch"> <a href="#" class="icon-search" id="searchButton"></a>
           </form>
@@ -114,7 +119,7 @@
     <script src="js/graph.js"></script>
 
     <script>
-      $("#searchInput").keypress(function(event){
+      $("#inputSearch").keypress(function(event){
         if(event.which == 13){
           $("#searchButton").trigger("click");
           event.preventDefault();
