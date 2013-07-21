@@ -78,11 +78,9 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="span3">
-          <h3>Search for Author</h3>
+          <h3>Search</h3>
           <form>
-            First name: <input type="text" name="firstname"><br>
-            Last name: <input type="text" name="lastname"><br>
-          <a href="#" class="btn btn-primary btn-large" id="goButton">Start &raquo;</a>
+            <input type="text" id="inputSearch"> <a href="#" class="icon-search" id="searchButton"></a>
           </form>
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
@@ -103,9 +101,7 @@
     </div><!--/span-->
   </div><!--/row-->
 
-      <hr>
-
-    </div><!--/.fluid-container-->
+  <div id ="result"></div>
 
     <!-- Le javascript
     ================================================== -->
@@ -116,6 +112,16 @@
     <script type="text/javascript" src="js/d3.layout.js"></script>
     <script src="js/d3.js1.25.0.js"></script>
     <script src="js/graph.js"></script>
+
+    <script>
+      $("#searchInput").keypress(function(event){
+        if(event.which == 13){
+          $("#searchButton").trigger("click");
+          event.preventDefault();
+        }
+      });
+
+    </script>
 
   </body>
 </html>
