@@ -9,7 +9,7 @@
                 'db'     : 'pubmed',
                 'term'   : search_term,
                 'retmax' : 500,          // maximum number of results from Esearch
-                'max'    : 25,          // maximum number of results passed to Esummary
+                'max'    : 10,          // maximum number of results passed to Esummary
                 'start'  : 0};
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
