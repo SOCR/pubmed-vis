@@ -2,8 +2,20 @@
 (function(){
   $(document).ready(function(){
     
+    window.onload = function(){
+        $('#previousButton').hide();
+        $('#nextButton').hide();
+      };
+
     $("#searchButton").click(function() {
       // var search_term = "Venter JC[Auth]";
+      var coauthorArray = new Array();
+      function coauthor(name, number)
+      {
+        this.name = name;
+        this.number = number;
+
+      }
       var search_term = $("#inputSearch").val();
         args = {'apikey' : '191d24f81e61c107bca103f7d6a9ca10',
                 'db'     : 'pubmed',
@@ -16,22 +28,52 @@
           $("#result").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
           return;
           }
-          $('#result').html(data.entrezajax.count + ' results found<br/>');
-          $.each(data.result, function(i, item) {
-            var author_list = '';
+
+          coauthorArray = new Array();
+          $.each(data.result, function(i, item){
             for(var i = 0; i < item.AuthorList.length; i ++) {
-              if(i != 0) {
-                author_list += ', ';
+              if(item.AuthorList[i] != $("#inputSearch").val()){
+                var authorListed = $.grep(coauthorArray, function(e){ return e.name == item.AuthorList[i]; })
+                if(authorListed.length == 0)
+                  coauthorArray.push(new coauthor(item.AuthorList[i],1));
+                else if (authorListed.length == 1)
+                  authorListed[0].number++;
               }
-              author_list += item.AuthorList[i];
             }
-            var html = '<p><a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item.ArticleIds.pubmed + '\'>' + item.Title + '</a><br/>' + author_list + '<br/>' + item.FullJournalName + ' ' + item.PubDate + '</p>';
+          })
+
+          showData();
+          function showData(){
+            $('#result').html(data.entrezajax.count + ' results found<br/>');
+            var item = data.result;
+            for(var num = 0; num < item.length; num++){
+              var author_list = '';
+              for(var i = 0; i < item[num].AuthorList.length; i ++) {
+                if(i != 0) {
+                  author_list += ', ';
+                }
+                author_list += item[num].AuthorList[i];
+              }
+            var html = '<p><a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[num].ArticleIds.pubmed + '\'>' + item[num].Title + '</a><br/>' + author_list + '<br/>' + item[num].FullJournalName + ' ' + item[num].PubDate + '</p>';
             $("<div/>").html(html).appendTo('#result');
-          });
+            }
+
+            previousButton.on("click",function(){
+            })
+            nextButton.on("click",function(){
+            })
+          }
         });
+        $('#previousButton').show();
+        $('#nextButton').show();
       });
 
     function createGraph()
+    {
+
+    }
+
+    function listCoauthors()
     {
 
     }
