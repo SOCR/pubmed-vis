@@ -1,4 +1,5 @@
 //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
+
 (function(){
   $(document).ready(function(){
     
@@ -8,6 +9,7 @@
       };
 
     $("#searchButton").click(function() {
+      var listAmount = 10;
       // var search_term = "Venter JC[Auth]";
       var coauthorArray = new Array();
       function coauthor(name, number)
@@ -25,8 +27,10 @@
                 'start'  : 0};
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
-          $("#result").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
-          return;
+            $("#result").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
+            $('#previousButton').hide();
+            $('#nextButton').hide();
+            return;
           }
 
           coauthorArray = new Array();
@@ -44,9 +48,11 @@
 
           showData();
           function showData(){
-            $('#result').html(data.entrezajax.count + ' results found<br/>');
+            var tablecontents = "";
+            tablecontents = '<table> <tr> <th>Title</th> <th>Journal</th><th>Date</th><th>Coauthors</th> </tr>';
             var item = data.result;
-            for(var num = 0; num < item.length; num++){
+            for (var num = 0; num < listAmount; num ++)
+            {
               var author_list = '';
               for(var i = 0; i < item[num].AuthorList.length; i ++) {
                 if(i != 0) {
@@ -54,24 +60,30 @@
                 }
                 author_list += item[num].AuthorList[i];
               }
-            var html = '<p><a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[num].ArticleIds.pubmed + '\'>' + item[num].Title + '</a><br/>' + author_list + '<br/>' + item[num].FullJournalName + ' ' + item[num].PubDate + '</p>';
-            $("<div/>").html(html).appendTo('#result');
+              tablecontents += "<tr>";
+              tablecontents += "<td>" + '<a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[num].ArticleIds.pubmed + '\'>' + item[num].Title + '</a>' + "</td>";
+              tablecontents += "<td>" + item[num].FullJournalName + "</td>";
+              tablecontents += "<td>" + item[num].PubDate + "</td>";
+              tablecontents += "<td>" + author_list + "</td>";
+              tablecontents += "</tr>";
             }
+            tablecontents += "</table>";
+            
 
-            previousButton.on("click",function(){
+            // var html = '<p><a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[num].ArticleIds.pubmed + '\'>' + item[num].Title + '</a><br/>' + author_list + '<br/>' + item[num].FullJournalName + ' ' + item[num].PubDate + '</p>';
+            // $("<div/>").html(html).appendTo('#articles');
+
+            document.getElementById("articles").innerHTML = tablecontents;
+
+            $('#previousButton').on("click",function(){
             })
-            nextButton.on("click",function(){
+            $('#nextButton').on("click",function(){
             })
           }
-        });
+        }); 
         $('#previousButton').show();
         $('#nextButton').show();
       });
-
-    function createGraph()
-    {
-
-    }
 
     function listCoauthors()
     {
