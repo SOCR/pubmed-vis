@@ -1,5 +1,6 @@
 //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
 LIST_AMOUNT = 10;
+currentPage=0;
 
 (function(){
   $(document).ready(function(){
@@ -10,9 +11,10 @@ LIST_AMOUNT = 10;
       };
 
     $("#searchButton").click(function() {
+        search();
+      });
 
-
-      // var search_term = "Venter JC[Auth]";
+    function search(){
       var coauthorArray = new Array();
       function coauthor(name, number)
       {
@@ -25,11 +27,11 @@ LIST_AMOUNT = 10;
                 'db'     : 'pubmed',
                 'term'   : search_term,
                 'retmax' : 500,          // maximum number of results from Esearch
-                'max'    : 10,          // maximum number of results passed to Esummary
+                'max'    : 100,          // maximum number of results passed to Esummary
                 'start'  : 0};
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
-            $("#result").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
+            $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
             $('#previousButton').hide();
             $('#nextButton').hide();
             return;
@@ -48,34 +50,14 @@ LIST_AMOUNT = 10;
             }
           })
 
-          // var dataSet='';
-          // dataSet += '{"name": "' + search_term + '", "url": ' + '"' + dataList.mUrl + '", "size": ' + setSize;
-          // var size = dataList.mArray.length;
-          // if(size != 0)
-          // {
-          //   dataSet += ',"children": [';
-          //   for(var i = 0; i < size; i++)
-          //   {
-          //     if(i != size - 1)
-          //       getDataSet(dataList.mArray[i], false, setSize * 2 / 3);
-          //     else
-          //       getDataSet(dataList.mArray[i], true, setSize * 2 / 3);
-          //   }
-          //   dataSet += ']';
-          // }
-          // dataSet += '}';
-          // if(!last)
-          // dataSet += ',';
-          // return;
-
           showData(data);
-          tree();
-        }); 
-        $('#previousButton').show();
-        $('#nextButton').show();
-      });
+          tree(data, coauthorArray);
+        });
+    }
 
     function showData(data){
+      $('#previousButton').show();
+      $('#nextButton').show();
       var tablecontents = "";
       tablecontents = '<table> <tr> <th>Title</th> <th>Journal</th><th>Date</th><th>Coauthors</th> </tr>';
       var item = data.result;
@@ -103,24 +85,12 @@ LIST_AMOUNT = 10;
       document.getElementById("articles").innerHTML = tablecontents;
     }
 
-    function tree(){    
-      var w = 960,
-          h = 500,
-          root;
-
-      var force = d3.layout.force()
-          .linkDistance(80)
-          .charge(-120)
-          .gravity(.05)
-          .size([w, h]);
-
-      var vis = d3.select("#chart").append("svg:svg")
-          .attr("width", w)
-          .attr("height", h);
-
-      d3.json("graph.json", function(json) {
-        root = json;
-        update();
+    function tree(data, coauthorArray){
+      $(window).resize(function() {
+        waitForFinalEvent(function() {
+          removeGraph();
+          tree(data, coauthorArray);
+        }, 500, '0a1edaaa-3f4e-4a23-8bc2-7f6e1a5f35b1');
       });
 
       var removeGraph = function() {
@@ -131,7 +101,55 @@ LIST_AMOUNT = 10;
         svg.on('mouseout', null);
 
         $('#chart').empty();
+      }
+
+      removeGraph();
+      var dataSet = makeDataSet();
+      function makeDataSet(){
+        var dataSet='';
+        dataSet += '{"name": "' + $("#inputSearch").val() + '", "size": 10000';
+        if(data.result.length != 0)
+        {
+          dataSet += ',"children": [';
+          for(var num = 0; num < LIST_AMOUNT; num++)
+          {
+            for(var i = 0; i < data.result[num].AuthorList.length; i++) {
+              if(data.result[num].AuthorList[i].toLowerCase() != $("#inputSearch").val().toLowerCase()){
+                var authorListed = $.grep(coauthorArray, function(e){ return e.name == data.result[num].AuthorList[i]; })
+                if(num != LIST_AMOUNT - 1 || i != data.result[num].AuthorList.length - 1)
+                  dataSet += '{"name": "' + data.result[num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '},';
+                else
+                  dataSet += '{"name": "' + data.result[num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+              }
+            }
+          }
+          dataSet += ']';
         }
+        dataSet += '}';
+        return dataSet;
+      }
+      var w = 960,
+          h = 500,
+          root;
+
+      var force = d3.layout.force()
+          .linkDistance(125)
+          .charge(-200)
+          .gravity(.05)
+          .size([w, h]);
+
+      var vis = d3.select("#chart").append("svg:svg")
+          .attr("width", w)
+          .attr("height", h);
+
+      // d3.json("graph.json", function(json) {
+      //   root = json;
+      //   update();
+      // });
+  
+      var json = jQuery.parseJSON(dataSet);
+        root = json;
+        update();
 
       function update() {
         var nodes = flatten(root),
@@ -217,7 +235,8 @@ LIST_AMOUNT = 10;
       }
 
       function dblclick(d) {
-        document.getElementById("testSize").innerHTML=d.size;
+        $("#inputSearch").val(d.name);
+        search();
       }
 
       // Returns a list of all nodes under the root.
@@ -234,5 +253,18 @@ LIST_AMOUNT = 10;
         return nodes;
       }
     }
+    var waitForFinalEvent = (function () {
+          var timers = {};
+          return function (callback, ms, uniqueId) {
+              if (!uniqueId) {
+                  uniqueId = 'Don\'t call this twice without a uniqueId';
+              }
+              if (timers[uniqueId]) {
+                  clearTimeout (timers[uniqueId]);
+              }
+              timers[uniqueId] = setTimeout(callback, ms);
+          };
+      })()
+
   }); //document ready
 })();
