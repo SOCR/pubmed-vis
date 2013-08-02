@@ -1,13 +1,13 @@
 //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
 LIST_AMOUNT = 10;
-currentPage=0;
+currentPage = 0;
+currentInc = LIST_AMOUNT * currentPage;
 
 (function(){
   $(document).ready(function(){
     
     window.onload = function(){
-        $('#previousButton').hide();
-        $('#nextButton').hide();
+        $('#paginate').hide();
       };
 
     $("#searchButton").click(function() {
@@ -26,14 +26,13 @@ currentPage=0;
         args = {'apikey' : '191d24f81e61c107bca103f7d6a9ca10',
                 'db'     : 'pubmed',
                 'term'   : search_term,
-                'retmax' : 500,          // maximum number of results from Esearch
+                'retmax' : 100,          // maximum number of results from Esearch
                 'max'    : 100,          // maximum number of results passed to Esummary
                 'start'  : 0};
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
             $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
-            $('#previousButton').hide();
-            $('#nextButton').hide();
+            $('#paginate').hide();
             return;
           }
 
@@ -50,39 +49,125 @@ currentPage=0;
             }
           })
 
-          showData(data);
+          showData(data, true);
           tree(data, coauthorArray);
+          $("#p1").click(function() {
+            currentPage = 0;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p2").click(function() {
+            currentPage = 1;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p3").click(function() {
+            currentPage = 2;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p4").click(function() {
+            currentPage = 3;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p5").click(function() {
+            currentPage = 4;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p6").click(function() {
+            currentPage = 5;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p7").click(function() {
+            currentPage = 6;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p8").click(function() {
+            currentPage = 7;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p9").click(function() {
+            currentPage = 8;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#p10").click(function() {
+            currentPage = 9;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+
         });
     }
 
-    function showData(data){
-      $('#previousButton').show();
-      $('#nextButton').show();
+    function showData(data, page){
+      if(page){
+        $('#paginate').show();
+        var size = data.result.length;
+        hider(size);
+      }
+
       var tablecontents = "";
       tablecontents = '<table> <tr> <th>Title</th> <th>Journal</th><th>Date</th><th>Coauthors</th> </tr>';
       var item = data.result;
       for (var num = 0; num < LIST_AMOUNT; num ++)
       {
         var author_list = '';
-        for(var i = 0; i < item[num].AuthorList.length; i ++) {
+        for(var i = 0; i < item[currentInc + num].AuthorList.length; i ++) {
           if(i != 0) {
             author_list += ', ';
           }
-          author_list += item[num].AuthorList[i];
+          author_list += item[currentInc + num].AuthorList[i];
         }
         if(num % 2 == 0)
           tablecontents += "<tr>";
         else
           tablecontents += "<tr class='alt'>";
-        tablecontents += "<td>" + '<a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[num].ArticleIds.pubmed + '\'>' + item[num].Title + '</a>' + "</td>";
-        tablecontents += "<td>" + item[num].FullJournalName + "</td>";
-        tablecontents += "<td>" + item[num].PubDate + "</td>";
+        tablecontents += "<td>" + '<a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[currentInc + num].ArticleIds.pubmed + '\'>' + item[currentInc + num].Title + '</a>' + "</td>";
+        tablecontents += "<td>" + item[currentInc + num].FullJournalName + "</td>";
+        tablecontents += "<td>" + item[currentInc + num].PubDate + "</td>";
         tablecontents += "<td>" + author_list + "</td>";
         tablecontents += "</tr>";
       }
       tablecontents += "</table>";
       
       document.getElementById("articles").innerHTML = tablecontents;
+    }
+
+    function hider(size){
+      if(size <= 90)
+        $('#p10').hide();
+      if(size <= 80)
+        $('#p9').hide();
+      if(size <= 70)
+        $('#p8').hide();
+      if(size <= 60)
+        $('#p7').hide();
+      if(size <= 50)
+        $('#p6').hide();
+      if(size <= 40)
+        $('#p5').hide();
+      if(size <= 30)
+        $('#p4').hide();
+      if(size <= 20)
+        $('#p3').hide();
+      if(size <= 10)
+        $('#p2').hide();
     }
 
     function tree(data, coauthorArray){
@@ -106,6 +191,7 @@ currentPage=0;
       removeGraph();
       var dataSet = makeDataSet();
       function makeDataSet(){
+        var included = new Array();
         var dataSet='';
         dataSet += '{"name": "' + $("#inputSearch").val() + '", "size": 10000';
         if(data.result.length != 0)
@@ -113,13 +199,17 @@ currentPage=0;
           dataSet += ',"children": [';
           for(var num = 0; num < LIST_AMOUNT; num++)
           {
-            for(var i = 0; i < data.result[num].AuthorList.length; i++) {
-              if(data.result[num].AuthorList[i].toLowerCase() != $("#inputSearch").val().toLowerCase()){
-                var authorListed = $.grep(coauthorArray, function(e){ return e.name == data.result[num].AuthorList[i]; })
-                if(num != LIST_AMOUNT - 1 || i != data.result[num].AuthorList.length - 1)
-                  dataSet += '{"name": "' + data.result[num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '},';
-                else
-                  dataSet += '{"name": "' + data.result[num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+            for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
+              if(data.result[currentInc + num].AuthorList[i].toLowerCase() != $("#inputSearch").val().toLowerCase()){
+                var checkAuthor = $.grep(included, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
+                if(checkAuthor.length == 0){
+                  var authorListed = $.grep(coauthorArray, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
+                  included.push(authorListed[0]);
+                  if(num == 0 && i == 0)
+                    dataSet += '{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                  else
+                    dataSet += ',{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                }
               }
             }
           }
@@ -141,11 +231,6 @@ currentPage=0;
       var vis = d3.select("#chart").append("svg:svg")
           .attr("width", w)
           .attr("height", h);
-
-      // d3.json("graph.json", function(json) {
-      //   root = json;
-      //   update();
-      // });
   
       var json = jQuery.parseJSON(dataSet);
         root = json;
