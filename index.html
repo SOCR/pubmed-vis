@@ -86,16 +86,15 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
           <a class="brand" href="#">PubMed Graph Visual</a>
-            <ul class="nav">
-              <li class="active"><a href="#">Search:</a></li>
-              <li> <form> <input type="text" id="inputSearch"> <a href="#" class="icon-search" id="searchButton"></a> </form></li>
-              <li><a href="#member2">Please enter a valid author or keyword</a></li>
+            <form class="navbar-form pull-left">
+              <p class="navbar-text">Enter a valid author or keyword: <input type="text" id="inputSearch"> <a href="#" class="icon-search" id="searchButton"></a></p>
+            </form>
+            <ul class="nav pull-right">
+              <li class="active"><a href="#">Creators:</a></li>
+              <li><a href="#member1">Patrick Tan</a></li>
+              <li><a href="#member2">Pratyush Pati</a></li>
+              <li><a href="#member3">Gary Chen</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -110,9 +109,9 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
+      </div><!--/row-->
+    </div><!--/span-->
+  </div><!--/row-->
 
   <table id ="articles"></table>
   <div class="pagination" style="text-align:center" id="paginate">

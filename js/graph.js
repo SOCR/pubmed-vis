@@ -219,13 +219,13 @@ currentInc = LIST_AMOUNT * currentPage;
         return dataSet;
       }
 
-      var w = 960,
-          h = 500,
+      var w = $(window).width()*.95,
+          h = 750,
           root;
 
       var force = d3.layout.force()
-          .linkDistance(125)
-          .charge(-200)
+          .linkDistance(150)
+          .charge(-350)
           .gravity(.05)
           .size([w, h]);
 
