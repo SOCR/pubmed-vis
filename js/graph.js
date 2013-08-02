@@ -1,6 +1,7 @@
 //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
 LIST_AMOUNT = 10;
 currentPage = 0;
+currentBatch = 0;
 currentInc = LIST_AMOUNT * currentPage;
 
 (function(){
@@ -26,9 +27,9 @@ currentInc = LIST_AMOUNT * currentPage;
         args = {'apikey' : '191d24f81e61c107bca103f7d6a9ca10',
                 'db'     : 'pubmed',
                 'term'   : search_term,
-                'retmax' : 100,          // maximum number of results from Esearch
-                'max'    : 100,          // maximum number of results passed to Esummary
-                'start'  : 0};
+                'retmax' : 100 + currentBatch * 100,          // maximum number of results from Esearch
+                'max'    : 100 + currentBatch * 100,          // maximum number of results passed to Esummary
+                'start'  : currentBatch * 100};
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
             $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
@@ -111,6 +112,20 @@ currentInc = LIST_AMOUNT * currentPage;
             currentInc = LIST_AMOUNT * currentPage;
             showData(data, false);
             tree(data, coauthorArray);
+          });
+          $("#p10").click(function() {
+            currentPage = 9;
+            currentInc = LIST_AMOUNT * currentPage;
+            showData(data, false);
+            tree(data, coauthorArray);
+          });
+          $("#prevBatch").click(function() {
+            currentBatch--;
+            search()
+          });
+          $("#nextBatch").click(function() {
+            currentBatch++;
+            search()
           });
         });
     }
