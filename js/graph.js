@@ -192,6 +192,7 @@ currentInc = LIST_AMOUNT * currentPage;
       var dataSet = makeDataSet();
       function makeDataSet(){
         var included = new Array();
+        var first = true;
         var dataSet='';
         dataSet += '{"name": "' + $("#inputSearch").val() + '", "size": 10000';
         if(data.result.length != 0)
@@ -205,8 +206,10 @@ currentInc = LIST_AMOUNT * currentPage;
                 if(checkAuthor.length == 0){
                   var authorListed = $.grep(coauthorArray, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
                   included.push(authorListed[0]);
-                  if(num == 0 && i == 0)
+                  if(first){
                     dataSet += '{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                    first = false;
+                  }
                   else
                     dataSet += ',{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
                 }
