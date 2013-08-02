@@ -51,6 +51,7 @@ currentInc = LIST_AMOUNT * currentPage;
 
           showData(data, true);
           tree(data, coauthorArray);
+
           $("#p1").click(function() {
             currentPage = 0;
             currentInc = LIST_AMOUNT * currentPage;
@@ -111,7 +112,6 @@ currentInc = LIST_AMOUNT * currentPage;
             showData(data, false);
             tree(data, coauthorArray);
           });
-
         });
     }
 
@@ -218,6 +218,7 @@ currentInc = LIST_AMOUNT * currentPage;
         dataSet += '}';
         return dataSet;
       }
+
       var w = 960,
           h = 500,
           root;
@@ -304,7 +305,7 @@ currentInc = LIST_AMOUNT * currentPage;
 
       // Color leaf nodes orange, and packages white or blue.
       function color(d) {
-        return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+        return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#95d2ca";
       }
 
       // Toggle children on click.
