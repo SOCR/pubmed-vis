@@ -93,10 +93,9 @@
           </button>
           <a class="brand" href="#">PubMed Graph Visual</a>
             <ul class="nav">
-              <li class="active"><a href="#">Creators:</a></li>
-              <li><a href="#member1">Patrick Tan</a></li>
-              <li><a href="#member2">Pratyush Pati</a></li>
-              <li><a href="#member3">Gary Chen</a></li>
+              <li class="active"><a href="#">Search:</a></li>
+              <li> <form> <input type="text" id="inputSearch"> <a href="#" class="icon-search" id="searchButton"></a> </form></li>
+              <li><a href="#member2">Please enter a valid author or keyword</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -105,28 +104,15 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span3">
-          <h3>Search</h3>
-          <div class="span12">
-            <div class="small-unit">
-              <p>Please enter a valid author or keyword</p>
-            </div>
-          </div>
-          <form>
-            <input type="text" id="inputSearch"> <a href="#" class="icon-search" id="searchButton"></a>
-          </form>
-        </div><!--/span-->
-        
-        <div class="span9">
+        <div class="span12">
           <div class="small-unit">
-            <h1>Visual Nodes!</h1>
             <div id="chart">
             </div>
           </div>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/span-->
-  </div><!--/row-->
+        </div>
+      </div>
+    </div>
+  </div>
 
   <table id ="articles"></table>
   <div class="pagination" style="text-align:center" id="paginate">
