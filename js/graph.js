@@ -9,6 +9,7 @@ currentInc = LIST_AMOUNT * currentPage;
     
     window.onload = function(){
         $('#paginate').hide();
+        document.getElementById("inputSearch").focus();
       };
 
     $("#searchButton").click(function() {
