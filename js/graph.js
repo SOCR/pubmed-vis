@@ -3,6 +3,8 @@ LIST_AMOUNT = 10;
 currentPage = 0;
 currentBatch = 0;
 currentInc = LIST_AMOUNT * currentPage;
+var coauthorArray = new Array();
+var search_term = '';
 
 (function(){
   $(document).ready(function(){
@@ -17,17 +19,16 @@ currentInc = LIST_AMOUNT * currentPage;
       });
 
     function search(){
-      var coauthorArray = new Array();
+      var data;
       function coauthor(name, number)
       {
         this.name = name;
         this.number = number;
-
       }
-      var search_term = $("#inputSearch").val();
-        args = {'apikey' : '191d24f81e61c107bca103f7d6a9ca10',
+      search_term = $("#inputSearch").val();
+        args = {'apikey' : 'f6bc08acc6c7dbd33c60f04ac9d55f38',
                 'db'     : 'pubmed',
-                'term'   : search_term,
+                'term'   : $("#inputSearch").val(),
                 'retmax' : 100 + currentBatch * 100,          // maximum number of results from Esearch
                 'max'    : 100 + currentBatch * 100,          // maximum number of results passed to Esummary
                 'start'  : currentBatch * 100};
@@ -38,7 +39,7 @@ currentInc = LIST_AMOUNT * currentPage;
             return;
           }
 
-          coauthorArray = new Array();
+          coauthorArray.length = 0;
           $.each(data.result, function(i, item){
             for(var i = 0; i < item.AuthorList.length; i ++) {
               if(item.AuthorList[i].toLowerCase() != search_term.toLowerCase()){
@@ -122,11 +123,13 @@ currentInc = LIST_AMOUNT * currentPage;
           });
           $("#prevBatch").click(function() {
             currentBatch--;
-            search()
+            changePagination();
+            search();
           });
           $("#nextBatch").click(function() {
             currentBatch++;
-            search()
+            changePagination();
+            search();
           });
         });
     }
@@ -186,6 +189,10 @@ currentInc = LIST_AMOUNT * currentPage;
         $('#p2').hide();
     }
 
+    function changePagination(){
+      document.getElementById("p1").innerHTML="New text!";
+    }
+
     function tree(data, coauthorArray){
       $(window).resize(function() {
         waitForFinalEvent(function() {
@@ -210,14 +217,14 @@ currentInc = LIST_AMOUNT * currentPage;
         var included = new Array();
         var first = true;
         var dataSet='';
-        dataSet += '{"name": "' + $("#inputSearch").val() + '", "size": 10000';
+        dataSet += '{"name": "' + search_term + '", "size": 10000';
         if(data.result.length != 0)
         {
           dataSet += ',"children": [';
           for(var num = 0; num < LIST_AMOUNT; num++)
           {
             for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
-              if(data.result[currentInc + num].AuthorList[i].toLowerCase() != $("#inputSearch").val().toLowerCase()){
+              if(data.result[currentInc + num].AuthorList[i].toLowerCase() != search_term.toLowerCase()){
                 var checkAuthor = $.grep(included, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
                 if(checkAuthor.length == 0){
                   var authorListed = $.grep(coauthorArray, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
