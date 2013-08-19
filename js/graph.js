@@ -8,7 +8,6 @@ var search_term = '';
 
 (function(){
   $(document).ready(function(){
-    
     window.onload = function(){
         $('#paginate').hide();
         document.getElementById("inputSearch").focus();
@@ -19,7 +18,6 @@ var search_term = '';
       });
 
     function search(){
-      var data;
       function coauthor(name, number)
       {
         this.name = name;
@@ -51,6 +49,19 @@ var search_term = '';
               }
             }
           })
+
+          $('#p1').unbind('click');
+          $('#p2').unbind('click');
+          $('#p3').unbind('click');
+          $('#p4').unbind('click');
+          $('#p5').unbind('click');
+          $('#p6').unbind('click');
+          $('#p7').unbind('click');
+          $('#p8').unbind('click');
+          $('#p9').unbind('click');
+          $('#p10').unbind('click');
+          $('#prevBatch').unbind('click');
+          $('#nextBatch').unbind('click');
 
           showData(data, true);
           tree(data, coauthorArray);
@@ -190,7 +201,16 @@ var search_term = '';
     }
 
     function changePagination(){
-      document.getElementById("p1").innerHTML="New text!";
+      document.getElementById("page1").innerHTML = 1 + 10 * currentBatch;
+      document.getElementById("page2").innerHTML = 2 + 10 * currentBatch;
+      document.getElementById("page3").innerHTML = 3 + 10 * currentBatch;
+      document.getElementById("page4").innerHTML = 4 + 10 * currentBatch;
+      document.getElementById("page5").innerHTML = 5 + 10 * currentBatch;
+      document.getElementById("page6").innerHTML = 6 + 10 * currentBatch;
+      document.getElementById("page7").innerHTML = 7 + 10 * currentBatch;
+      document.getElementById("page8").innerHTML = 8 + 10 * currentBatch;
+      document.getElementById("page9").innerHTML = 9 + 10 * currentBatch;
+      document.getElementById("page10").innerHTML = 10 + 10 * currentBatch;
     }
 
     function tree(data, coauthorArray){
