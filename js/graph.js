@@ -2,6 +2,7 @@
 LIST_AMOUNT = 10;
 currentPage = 0;
 currentBatch = 0;
+totalCount = 0;
 currentInc = LIST_AMOUNT * currentPage;
 var coauthorArray = new Array();
 var search_term = '';
@@ -37,6 +38,7 @@ var search_term = '';
             return;
           }
 
+          totalCount = data.entrezajax.count;
           coauthorArray.length = 0;
           $.each(data.result, function(i, item){
             for(var i = 0; i < item.AuthorList.length; i ++) {
@@ -50,6 +52,8 @@ var search_term = '';
             }
           })
 
+          changePagination();
+
           $('#p1').unbind('click');
           $('#p2').unbind('click');
           $('#p3').unbind('click');
@@ -62,85 +66,140 @@ var search_term = '';
           $('#p10').unbind('click');
           $('#prevBatch').unbind('click');
           $('#nextBatch').unbind('click');
+          $('#p1').attr('class', 'active');
 
           showData(data, true);
           tree(data, coauthorArray);
 
           $("#p1").click(function() {
-            currentPage = 0;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 0){
+              clearActive()
+              $('#p1').attr('class', 'active');
+              currentPage = 0;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p2").click(function() {
-            currentPage = 1;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 1){
+              clearActive()
+              $('#p2').attr('class', 'active');
+              currentPage = 1;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p3").click(function() {
-            currentPage = 2;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 2){
+              clearActive()
+              $('#p3').attr('class', 'active');
+              currentPage = 2;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p4").click(function() {
-            currentPage = 3;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 3){
+              clearActive()
+              $('#p4').attr('class', 'active');
+              currentPage = 3;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p5").click(function() {
-            currentPage = 4;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 4){
+              clearActive()
+              $('#p5').attr('class', 'active');
+              currentPage = 4;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p6").click(function() {
-            currentPage = 5;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 5){
+              clearActive()
+              $('#p6').attr('class', 'active');
+              currentPage = 5;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p7").click(function() {
-            currentPage = 6;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 6){
+              clearActive()
+              $('#p7').attr('class', 'active');
+              currentPage = 6;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p8").click(function() {
-            currentPage = 7;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 7){
+              clearActive()
+              $('#p8').attr('class', 'active');
+              currentPage = 7;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p9").click(function() {
-            currentPage = 8;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 8){
+              clearActive()
+              $('#p9').attr('class', 'active');
+              currentPage = 8;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#p10").click(function() {
-            currentPage = 9;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
-          });
-          $("#p10").click(function() {
-            currentPage = 9;
-            currentInc = LIST_AMOUNT * currentPage;
-            showData(data, false);
-            tree(data, coauthorArray);
+            event.preventDefault();
+            if(currentPage != 9){
+              clearActive()
+              $('#p10').attr('class', 'active');
+              currentPage = 9;
+              currentInc = LIST_AMOUNT * currentPage;
+              showData(data, false);
+              tree(data, coauthorArray);
+            }
           });
           $("#prevBatch").click(function() {
-            currentBatch--;
-            changePagination();
-            search();
+            event.preventDefault(); 
+            if(currentBatch != 0){
+              currentInc = 0;
+              clearActive()
+              currentBatch--;
+              changePagination();
+              search();
+            } 
           });
           $("#nextBatch").click(function() {
-            currentBatch++;
-            changePagination();
-            search();
+            event.preventDefault();
+            if(currentBatch * 100 <= totalCount){
+              currentInc = 0;
+              clearActive()
+              currentBatch++;
+              changePagination();
+              search();
+            }
           });
         });
     }
@@ -155,7 +214,7 @@ var search_term = '';
       var tablecontents = "";
       tablecontents = '<table> <tr> <th>Title</th> <th>Journal</th><th>Date</th><th>Coauthors</th> </tr>';
       var item = data.result;
-      for (var num = 0; num < LIST_AMOUNT; num ++)
+      for (var num = 0; num < LIST_AMOUNT && (currentBatch * 100 + currentInc + num) < totalCount; num ++)
       {
         var author_list = '';
         for(var i = 0; i < item[currentInc + num].AuthorList.length; i ++) {
@@ -182,22 +241,61 @@ var search_term = '';
     function hider(size){
       if(size <= 90)
         $('#p10').hide();
+      else
+        $('#p10').show();
       if(size <= 80)
         $('#p9').hide();
+      else
+        $('#p9').show();
       if(size <= 70)
         $('#p8').hide();
+      else
+        $('#p8').show();
       if(size <= 60)
         $('#p7').hide();
+      else
+        $('#p7').show();
       if(size <= 50)
         $('#p6').hide();
+      else
+        $('#p6').show();
       if(size <= 40)
         $('#p5').hide();
+      else
+        $('#p5').show();
       if(size <= 30)
         $('#p4').hide();
+      else
+        $('#p4').show();
       if(size <= 20)
         $('#p3').hide();
+      else
+        $('#p3').show();
       if(size <= 10)
         $('#p2').hide();
+      else
+        $('#p2').show();
+      if(currentBatch == 0)
+        $('#prevBatch').attr('class', 'disabled');
+      else
+        $('#prevBatch').attr('class', '');
+      if((currentBatch + 1) * 100 > totalCount)
+        $('#nextBatch').attr('class', 'disabled');
+      else
+        $('#nextBatch').attr('class', '');
+    }
+
+    function clearActive(){
+      $('#p1').attr('class', '');
+      $('#p2').attr('class', '');
+      $('#p3').attr('class', '');
+      $('#p4').attr('class', '');
+      $('#p5').attr('class', '');
+      $('#p6').attr('class', '');
+      $('#p7').attr('class', '');
+      $('#p8').attr('class', '');
+      $('#p9').attr('class', '');
+      $('#p10').attr('class', '');
     }
 
     function changePagination(){
@@ -237,11 +335,11 @@ var search_term = '';
         var included = new Array();
         var first = true;
         var dataSet='';
-        dataSet += '{"name": "' + search_term + '", "size": 10000';
+        dataSet += '{"name": "' + search_term + '", "size": 100000';
         if(data.result.length != 0)
         {
           dataSet += ',"children": [';
-          for(var num = 0; num < LIST_AMOUNT; num++)
+          for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++)
           {
             for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
               if(data.result[currentInc + num].AuthorList[i].toLowerCase() != search_term.toLowerCase()){
@@ -367,6 +465,9 @@ var search_term = '';
       }
 
       function dblclick(d) {
+        currentBatch = 0;
+        currentInc = 0;
+        clearActive();
         $("#inputSearch").val(d.name);
         search();
       }
