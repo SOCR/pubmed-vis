@@ -419,6 +419,8 @@ var search_term = '';
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
             .on("click", click)
             .on("dblclick", dblclick)
+            .on("mouseover",mouseover)
+            .on("mouseout",mouseout)
             .call(force.drag);
 
         nodeEnter.append("svg:circle")
@@ -485,6 +487,21 @@ var search_term = '';
         recurse(root);
         return nodes;
       }
+
+
+//testing mouse over
+      function mouseover(d) {
+        d3.select(this).select("circle").transition()
+            .duration(750)
+            .attr("r", 20);
+      }
+      function mouseout(d) {
+        d3.select(this).select("circle").transition()
+            .duration(750)
+            .attr("r", 8);
+      }
+
+
     }
     var waitForFinalEvent = (function () {
           var timers = {};
