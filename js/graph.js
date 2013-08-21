@@ -364,12 +364,12 @@ var search_term = '';
       }
 
       var w = $(window).width()*.95,
-          h = 750,
+          h = 850,
           root;
 
       var force = d3.layout.force()
           .linkDistance(150)
-          .charge(-800)
+          .charge(-600)
           .gravity(.05)
           .size([w, h]);
 
@@ -504,7 +504,6 @@ var search_term = '';
             .duration(500)
             .attr("r", newSize);
       }
-
 
     }
     var waitForFinalEvent = (function () {
