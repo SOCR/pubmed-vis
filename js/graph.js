@@ -490,8 +490,6 @@ var search_term = '';
         return nodes;
       }
 
-
-//testing mouse over
       function mouseover(d) {
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
