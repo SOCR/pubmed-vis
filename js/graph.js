@@ -425,7 +425,7 @@ var search_term = '';
 
         nodeEnter.append("svg:circle")
             .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
-            .attr("store", 3 * function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+            .attr("store", function(d) { return 3 * Math.sqrt(d.size) / 10 || 4.5; })
             .style("fill", color);
 
         nodeEnter.append("svg:text")
@@ -492,17 +492,19 @@ var search_term = '';
 
 //testing mouse over
       function mouseover(d) {
-        var curSize = d3.select(this).select("circle").attr("r");
-        d3.select(this).select("circle").transition()
-            .duration(500)
-            .attr("store", curSize)
-            .attr("r", 3 * curSize);
-      }
-      function mouseout(d) {
+        var oldSize = d3.select(this).select("circle").attr("r");
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
             .duration(500)
-            .attr("store", 3 * newSize)
+            .attr("store", oldSize)
+            .attr("r", newSize);
+      }
+      function mouseout(d) {
+        var oldSize = d3.select(this).select("circle").attr("r");
+        var newSize = d3.select(this).select("circle").attr("store");
+        d3.select(this).select("circle").transition()
+            .duration(500)
+            .attr("store", oldSize)
             .attr("r", newSize);
       }
 
