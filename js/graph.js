@@ -488,8 +488,6 @@ var search_term = '';
         return nodes;
       }
 
-
-//testing mouse over
       function mouseover(d) {
         d3.select(this).select("circle").transition()
             .duration(750)
@@ -500,7 +498,6 @@ var search_term = '';
             .duration(750)
             .attr("r", 8);
       }
-
 
     }
     var waitForFinalEvent = (function () {
