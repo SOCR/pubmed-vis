@@ -425,6 +425,7 @@ var search_term = '';
 
         nodeEnter.append("svg:circle")
             .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+            .attr("store", 3 * function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
             .style("fill", color);
 
         nodeEnter.append("svg:text")
@@ -501,6 +502,7 @@ var search_term = '';
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
             .duration(500)
+            .attr("store", 3 * newSize)
             .attr("r", newSize);
       }
 
