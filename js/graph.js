@@ -369,7 +369,7 @@ var search_term = '';
 
       var force = d3.layout.force()
           .linkDistance(150)
-          .charge(-350)
+          .charge(-800)
           .gravity(.05)
           .size([w, h]);
 
