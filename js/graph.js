@@ -491,14 +491,17 @@ var search_term = '';
 
 //testing mouse over
       function mouseover(d) {
+        var curSize = d3.select(this).select("circle").attr("r");
         d3.select(this).select("circle").transition()
-            .duration(750)
-            .attr("r", 20);
+            .duration(500)
+            .attr("store", curSize)
+            .attr("r", 3 * curSize);
       }
       function mouseout(d) {
+        var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
-            .duration(750)
-            .attr("r", 8);
+            .duration(500)
+            .attr("r", newSize);
       }
 
 
