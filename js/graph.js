@@ -376,16 +376,7 @@ var search_term = '';
       var vis = d3.select("#chart").append("svg:svg")
           .attr("width", w)
           .attr("height", h)
-          .append('svg:g')
-            .call(d3.behavior.zoom().on("zoom", redraw));
-  
-      function redraw() {
-        console.log("here", d3.event.translate, d3.event.scale);
-        vis.attr("transform",
-            "translate(" + d3.event.translate + ")"
-            + " scale(" + d3.event.scale + ")");
-      }
-  
+
       var json = jQuery.parseJSON(dataSet);
         root = json;
         update();
