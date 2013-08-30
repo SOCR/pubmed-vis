@@ -363,8 +363,8 @@ var search_term = '';
         return dataSet;
       }
 
-      var w = $(window).width()*.95,
-          h = 850,
+      var w = $("#chart").width(),
+          h = $("#chart").height(),
           root;
 
       var force = d3.layout.force()
