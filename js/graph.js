@@ -478,6 +478,9 @@ var search_term = '';
       }
 
       function rightclick(d) {
+        var txt = encodeURIComponent(d.name);
+        window.open("https://www.google.com/#q=" + txt, '_blank');
+        // win.focus();
       }
 
       // Returns a list of all nodes under the root.
