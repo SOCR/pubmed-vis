@@ -504,7 +504,8 @@ var search_term = '';
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
             .duration(500)
-            .attr("r", newSize);
+            .attr("r", newSize)
+            d3.select(this.parentNode.appendChild(this));
         d3.select(this).select("text").transition()
             .duration(500)
             .style("font-size", "30px")
