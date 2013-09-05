@@ -17,7 +17,7 @@ var search_term = '';
     $("#searchButton").click(function() {
         search();
       });
-
+    // Search feature.
     function search(){
       function coauthor(name, number)
       {
@@ -53,7 +53,7 @@ var search_term = '';
           })
 
           changePagination();
-
+          // Active links to results of search.
           $('#p1').unbind('click');
           $('#p2').unbind('click');
           $('#p3').unbind('click');
@@ -203,7 +203,7 @@ var search_term = '';
           });
         });
     }
-
+    // Display table of results.
     function showData(data, page){
       if(page){
         $('#paginate').show();
@@ -330,6 +330,7 @@ var search_term = '';
       }
 
       removeGraph();
+      // Obtain data set of co-authors.
       var dataSet = makeDataSet();
       function makeDataSet(){
         var included = new Array();
@@ -362,7 +363,7 @@ var search_term = '';
         dataSet += '}';
         return dataSet;
       }
-
+      // Size of window graph is present.
       var w = $(window).width()*.95,
           h = 850,
           root;
@@ -423,13 +424,13 @@ var search_term = '';
             .on("mouseover",mouseover)
             .on("mouseout",mouseout)
             .call(force.drag);
-
+            // Circle characteristics
         nodeEnter.append("svg:circle")
             .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
             .attr("original", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
             .attr("store", function(d) { return 3 * Math.sqrt(d.size) / 10 || 4.5; })
             .style("fill", color);
-
+            // Text characteristics
         nodeEnter.append("svg:text")
             .attr("text-anchor", "middle")
             .attr("dy", ".35em")
@@ -452,7 +453,7 @@ var search_term = '';
         });
       }
 
-      // Color leaf nodes orange, and packages white or blue.
+      // Color of the Nodes.
       function color(d) {
         return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#95d2ca";
       }
@@ -468,7 +469,7 @@ var search_term = '';
         }
         update();
       }
-
+      // Double Click Feature: Focus of the graph. 
       function dblclick(d) {
         currentBatch = 0;
         currentInc = 0;
@@ -476,10 +477,10 @@ var search_term = '';
         $("#inputSearch").val(d.name);
         search();
       }
-
+      // Right Click Feature: Link to author.
       function rightclick(d) {
         var txt = encodeURIComponent(d.name);
-        window.open("https://www.google.com/#q=" + txt, '_blank');
+        window.open("https://www.google.com/#q=" + txt);
         // win.focus();
       }
 
@@ -497,15 +498,18 @@ var search_term = '';
         return nodes;
       }
 
+      //When mouse inside the node.
       function mouseover(d) {
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
             .duration(500)
-            .attr("r", newSize);
+            .attr("r", newSize)
+            d3.select(this.parentNode.appendChild(this));
         d3.select(this).select("text").transition()
             .duration(500)
             .style("font-size", "30px")
       }
+      // When mouse outside the node.
       function mouseout(d) {
         var newSize = d3.select(this).select("circle").attr("original");
         d3.select(this).select("circle").transition()
@@ -517,6 +521,7 @@ var search_term = '';
       }
 
     }
+    // Run-time Check.
     var waitForFinalEvent = (function () {
           var timers = {};
           return function (callback, ms, uniqueId) {
