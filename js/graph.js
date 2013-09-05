@@ -480,7 +480,7 @@ var search_term = '';
       // Right Click Feature: Link to author.
       function rightclick(d) {
         var txt = encodeURIComponent(d.name);
-        window.open("https://www.google.com/#q=" + txt, '_blank');
+        window.open("https://www.google.com/#q=" + txt);
         // win.focus();
       }
 
