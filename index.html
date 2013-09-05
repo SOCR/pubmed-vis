@@ -353,7 +353,11 @@
 	          event.preventDefault();
 	        }
 	      });
-	
+	      
+		$("#chart").bind("contextmenu",function(e){
+          return false; //disable the context menu
+      	});
+
 	</script>
 </body>
 </html>

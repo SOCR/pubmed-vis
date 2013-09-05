@@ -418,6 +418,7 @@ var search_term = '';
             .attr("class", "node")
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
             .on("click", click)
+            .on("contextmenu", rightclick)
             .on("dblclick", dblclick)
             .on("mouseover",mouseover)
             .on("mouseout",mouseout)
@@ -476,6 +477,13 @@ var search_term = '';
         search();
       }
 
+      function rightclick(d) {
+        var txt = encodeURIComponent(d.name);
+        window.open("https://www.google.com/#q=" + txt);
+        // win.focus();
+      }
+
+
       // Returns a list of all nodes under the root.
       function flatten(root) {
         var nodes = [], i = 0;
@@ -494,13 +502,20 @@ var search_term = '';
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
             .duration(500)
-            .attr("r", newSize);
+            .attr("r", newSize)
+            d3.select(this.parentNode.appendChild(this));
+        d3.select(this).select("text").transition()
+            .duration(500)
+            .style("font-size", "30px")
       }
       function mouseout(d) {
         var newSize = d3.select(this).select("circle").attr("original");
         d3.select(this).select("circle").transition()
             .duration(500)
             .attr("r", newSize);
+        d3.select(this).select("text").transition()
+            .duration(500)
+            .style("font-size", "10px")
       }
 
     }
