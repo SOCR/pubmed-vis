@@ -363,9 +363,10 @@ var search_term = '';
         dataSet += '}';
         return dataSet;
       }
+      
       // Size of window graph is present.
-      var w = $(window).width()*.95,
-          h = 850,
+      var w = $("#chart").width(),
+          h = $("#chart").height(),
           root;
 
       var force = d3.layout.force()
@@ -419,6 +420,7 @@ var search_term = '';
             .attr("class", "node")
             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
             .on("click", click)
+            .on("contextmenu", rightclick)
             .on("dblclick", dblclick)
             .on("contextmenu", rightclick)
             .on("mouseover",mouseover)
@@ -483,6 +485,13 @@ var search_term = '';
         window.open("https://www.google.com/#q=" + txt);
         // win.focus();
       }
+
+      function rightclick(d) {
+        var txt = encodeURIComponent(d.name);
+        window.open("https://www.google.com/#q=" + txt);
+        // win.focus();
+      }
+
 
       // Returns a list of all nodes under the root.
       function flatten(root) {
