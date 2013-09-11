@@ -1,4 +1,22 @@
-//api key:f6bc08acc6c7dbd33c60f04ac9d55f38
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+PubMed Visualization
+Creators: Patrick Tan, Pratyush Pati, Gary Chen
+
+The PubMed Visualization applet is a graphical representation of the PubMed database of biomedical 
+literature ranging from published journals and online books. The search criteria allows users 
+to find articles based on titles, authors, and topics. The graph is rendered by the D3 JavaScript Library
+which displays your search item in the middle and the authors and co-authors related to it by the connected
+nodes. The size of the nodes varies depending how well the author or co-author is related with the searched 
+item, such that closely related topics or authors and co-authors that often work together will appear larger.
+Users can use a mouse-over to amplify the node and a double-click searches the selected item, while rendering 
+a new graph. Additionally, a right-click allows user to Google search the name which will be displayed in a new
+window or tab. Below the graph, the user is shown a data table consisting of titles, journal name, date of 
+publication, and co-authors of the searched item. A single-click on the titles allows users to go directly to 
+the article link on the PubMed website. The user is shown the first ten entries upon a search and has the 
+option to browse additional entries by the numbered links below the data table. 
+
+*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 LIST_AMOUNT = 10;
 currentPage = 0;
 currentBatch = 0;
@@ -24,6 +42,7 @@ var search_term = '';
         this.name = name;
         this.number = number;
       }
+      //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
       search_term = $("#inputSearch").val();
         args = {'apikey' : 'f6bc08acc6c7dbd33c60f04ac9d55f38',
                 'db'     : 'pubmed',
