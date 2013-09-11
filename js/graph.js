@@ -480,7 +480,7 @@ var search_term = '';
       // Right Click Feature: Link to author.
       function rightclick(d) {
         var txt = encodeURIComponent(d.name);
-        window.open("https://www.google.com/#q=" + txt, '_blank');
+        window.open("https://www.google.com/#q=" + txt);
         // win.focus();
       }
 
@@ -502,7 +502,8 @@ var search_term = '';
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
             .duration(500)
-            .attr("r", newSize);
+            .attr("r", newSize)
+            d3.select(this.parentNode.appendChild(this));
         d3.select(this).select("text").transition()
             .duration(500)
             .style("font-size", "30px")
