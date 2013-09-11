@@ -497,8 +497,6 @@ var search_term = '';
         recurse(root);
         return nodes;
       }
-
-
       //When mouse inside the node.
       function mouseover(d) {
         var newSize = d3.select(this).select("circle").attr("store");
