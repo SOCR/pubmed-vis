@@ -33,6 +33,9 @@ var search_term = '';
       };
 
     $("#searchButton").click(function() {
+        currentBatch = 0;
+        currentInc = 0;
+        clearActive();
         search();
       });
     // Search feature.
