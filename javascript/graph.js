@@ -46,6 +46,7 @@ var search_term = '';
         this.number = number;
       }
       //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
+      //Search terms and parameters for entrezajax call
       search_term = $("#inputSearch").val();
         args = {'apikey' : 'f6bc08acc6c7dbd33c60f04ac9d55f38',
                 'db'     : 'pubmed',
@@ -53,6 +54,7 @@ var search_term = '';
                 'retmax' : 100 + currentBatch * 100,          // maximum number of results from Esearch
                 'max'    : 100 + currentBatch * 100,          // maximum number of results passed to Esummary
                 'start'  : currentBatch * 100};
+        //Check if call is successful
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
             $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
@@ -60,6 +62,7 @@ var search_term = '';
             return;
           }
 
+          //For loop adding all coauthors to array
           totalCount = data.entrezajax.count;
           coauthorArray.length = 0;
           $.each(data.result, function(i, item){
@@ -75,7 +78,7 @@ var search_term = '';
           })
 
           changePagination();
-          // Active links to results of search.
+          // Unbind active links to results of search.
           $('#p1').unbind('click');
           $('#p2').unbind('click');
           $('#p3').unbind('click');
@@ -93,6 +96,7 @@ var search_term = '';
           showData(data, true);
           tree(data, coauthorArray);
 
+          //Force page movement on pagination clicks
           $("#p1").click(function() {
             event.preventDefault();
             if(currentPage != 0){
@@ -233,9 +237,11 @@ var search_term = '';
         hider(size);
       }
 
+      //Create table to show data of articles
       var tablecontents = "";
       tablecontents = '<table> <tr> <th>Title</th> <th>Journal</th><th>Date</th><th>Coauthors</th> </tr>';
       var item = data.result;
+      //Create list of authors for each article
       for (var num = 0; num < LIST_AMOUNT && (currentBatch * 100 + currentInc + num) < totalCount; num ++)
       {
         var author_list = '';
@@ -260,6 +266,7 @@ var search_term = '';
       document.getElementById("articles").innerHTML = tablecontents;
     }
 
+    //Hides pagination numbers if over the limit
     function hider(size){
       if(size <= 90)
         $('#p10').hide();
@@ -362,8 +369,10 @@ var search_term = '';
         if(data.result.length != 0)
         {
           dataSet += ',"children": [';
+          //For each article
           for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++)
           {
+            //Find number of times author has worked with each coauthor
             for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
               if(data.result[currentInc + num].AuthorList[i].toLowerCase() != search_term.toLowerCase()){
                 var checkAuthor = $.grep(included, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
