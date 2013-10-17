@@ -28,13 +28,17 @@ option to browse additional entries by the numbered links below the data table.
 
   idPaginate = $("#paginate")
   idInputSearch = $("#inputSearch")
+  idSearch = $("#searchButton")
+  idChart = $("#chart")
+  
   $(document).ready(function(){
     window.onload = function(){
         idPaginate.hide();
         idInputSearch.focus();
       };
 
-    $("#searchButton").click(function() {
+    idSearch.click(function() {
+        search_term = idInputSearch.val();
         currentBatch = 0;
         currentInc = 0;
         clearActive();
@@ -48,16 +52,15 @@ option to browse additional entries by the numbered links below the data table.
       }
       //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
       //Search terms and parameters for entrezajax call
-      search_term = idInputSearch.val();
         args = {'apikey' : 'f6bc08acc6c7dbd33c60f04ac9d55f38',
                 'db'     : 'pubmed',
-                'term'   : $("#inputSearch").val(),
+                'term'   : search_term,
                 'retmax' : 100 + currentBatch * 100,          // maximum number of results from Esearch
                 'max'    : 100 + currentBatch * 100,          // maximum number of results passed to Esummary
                 'start'  : currentBatch * 100};
         //Check if call is successful
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
-          if(data.entrezajax.error == true) {
+          if(data.entrezajax.error === true) {
             $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
             idPaginate.hide();
             return;
@@ -68,11 +71,11 @@ option to browse additional entries by the numbered links below the data table.
           coauthorArray.length = 0;
           $.each(data.result, function(i, item){
             for(var i = 0; i < item.AuthorList.length; i ++) {
-              if(item.AuthorList[i].toLowerCase() != search_term.toLowerCase()){
-                var authorListed = $.grep(coauthorArray, function(e){ return e.name == item.AuthorList[i]; })
-                if(authorListed.length == 0)
+              if(item.AuthorList[i].toLowerCase() !== search_term.toLowerCase()){
+                var authorListed = $.grep(coauthorArray, function(e){ return e.name === item.AuthorList[i]; })
+                if(authorListed.length === 0)
                   coauthorArray.push(new coauthor(item.AuthorList[i],1));
-                else if (authorListed.length == 1)
+                else if (authorListed.length === 1)
                   authorListed[0].number++;
               }
             }
@@ -81,7 +84,8 @@ option to browse additional entries by the numbered links below the data table.
           changePagination();
           // Unbind active links to results of search.
           $(".unbindPage").unbind('click');
-          $(".unbindBatch").unbind('click');
+          $('#prevBatch').unbind('click');
+          $('#nextBatch').unbind('click');
           $('#p1').attr('class', 'active unbindPage');
 
           showData(data, true);
@@ -93,7 +97,7 @@ option to browse additional entries by the numbered links below the data table.
             var number = pageID.substring(1,2)
             number = parseInt(number) - 1
             event.preventDefault();
-            if(currentPage != number){
+            if(currentPage !== number){
               clearActive()
               $(this).attr('class', 'active unbindPage');
               currentPage = number;
@@ -105,7 +109,7 @@ option to browse additional entries by the numbered links below the data table.
 
           $("#prevBatch").click(function() {
             event.preventDefault(); 
-            if(currentBatch != 0){
+            if(currentBatch !== 0){
               currentInc = 0;
               clearActive()
               currentBatch--;
@@ -142,12 +146,12 @@ option to browse additional entries by the numbered links below the data table.
       {
         var author_list = '';
         for(var i = 0; i < item[currentInc + num].AuthorList.length; i ++) {
-          if(i != 0) {
+          if(i !== 0) {
             author_list += ', ';
           }
           author_list += item[currentInc + num].AuthorList[i];
         }
-        if(num % 2 == 0)
+        if(num % 2 === 0)
           tablecontents += "<tr>";
         else
           tablecontents += "<tr class='alt'>";
@@ -200,7 +204,7 @@ option to browse additional entries by the numbered links below the data table.
         $('#p2').hide();
       else
         $('#p2').show();
-      if(currentBatch == 0)
+      if(currentBatch === 0)
         $('#prevBatch').attr('class', 'disabled');
       else
         $('#prevBatch').attr('class', '');
@@ -211,36 +215,15 @@ option to browse additional entries by the numbered links below the data table.
     }
 
     function clearActive(){
-      // for(i=1; i<10; i++){
-      //   $('"#p'+i+'"').attr('class', 'unbindPage');
-      // }
-      $('#p1').attr('class', 'unbindPage');
-      $('#p2').attr('class', 'unbindPage');
-      $('#p3').attr('class', 'unbindPage');
-      $('#p4').attr('class', 'unbindPage');
-      $('#p5').attr('class', 'unbindPage');
-      $('#p6').attr('class', 'unbindPage');
-      $('#p7').attr('class', 'unbindPage');
-      $('#p8').attr('class', 'unbindPage');
-      $('#p9').attr('class', 'unbindPage');
-      $('#p10').attr('class', 'unbindPage');
+      for(i=1; i<10; i++){
+        $('#p'+i).attr('class', 'unbindPage');
+      }
     }
 
     function changePagination(){
-      // for(i=1; i<10; i++){
-      //   var curID='"#page'+i+'"'
-      //   $("curID").html(i + 10 * currentBatch);
-      // }
-      $("#page1").html(1 + 10 * currentBatch);
-      $("#page2").html(2 + 10 * currentBatch);
-      $("#page3").html(3 + 10 * currentBatch);
-      $("#page4").html(4 + 10 * currentBatch);
-      $("#page5").html(5 + 10 * currentBatch);
-      $("#page6").html(6 + 10 * currentBatch);
-      $("#page7").html(7 + 10 * currentBatch);
-      $("#page8").html(8 + 10 * currentBatch);
-      $("#page9").html(9 + 10 * currentBatch);
-      $("#page10").html(10 + 10 * currentBatch);
+      for(i=1; i<=10; i++){
+        $('#page'+i).html(i + 10 * currentBatch);
+      }
     }
 
     function tree(data, coauthorArray){
@@ -258,7 +241,7 @@ option to browse additional entries by the numbered links below the data table.
         svg.on('mouseover', null);
         svg.on('mouseout', null);
 
-        $('#chart').empty();
+        idChart.empty();
       }
 
       removeGraph();
@@ -269,16 +252,16 @@ option to browse additional entries by the numbered links below the data table.
         var first = true;
         var dataSet='';
         dataSet += '{"name": "' + search_term + '", "size": 100000';
-        if(data.result.length != 0){
+        if(data.result.length !== 0){
           dataSet += ',"children": [';
           //For each article
           for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++){
             //Find number of times author has worked with each coauthor
             for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
-              if(data.result[currentInc + num].AuthorList[i].toLowerCase() != search_term.toLowerCase()){
-                var checkAuthor = $.grep(included, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
-                if(checkAuthor.length == 0){
-                  var authorListed = $.grep(coauthorArray, function(e){ return e.name == data.result[currentInc + num].AuthorList[i]; })
+              if(data.result[currentInc + num].AuthorList[i].toLowerCase() !== search_term.toLowerCase()){
+                var checkAuthor = $.grep(included, function(e){ return e.name === data.result[currentInc + num].AuthorList[i]; })
+                if(checkAuthor.length === 0){
+                  var authorListed = $.grep(coauthorArray, function(e){ return e.name === data.result[currentInc + num].AuthorList[i]; })
                   included.push(authorListed[0]);
                   if(first){
                     dataSet += '{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
@@ -297,8 +280,8 @@ option to browse additional entries by the numbered links below the data table.
       }
       
       // Size of window graph is present.
-      var w = $("#chart").width(),
-          h = $("#chart").height(),
+      var w = idChart.width(),
+          h = idChart.height(),
           root;
 
       var force = d3.layout.force()
@@ -409,7 +392,7 @@ option to browse additional entries by the numbered links below the data table.
         currentInc = 0;
         clearActive();
         idInputSearch.val(d.name);
-        search();
+        idSearch.trigger("click");
       }
       // Right Click Feature: Link to author.
       function rightclick(d) {
