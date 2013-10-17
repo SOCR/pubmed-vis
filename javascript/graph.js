@@ -94,7 +94,7 @@ option to browse additional entries by the numbered links below the data table.
           //Force page movement on pagination clicks
           $(".unbindPage").click(function(){
             var pageID = $(this).attr('id')
-            var number = pageID.substring(1,2)
+            var number = pageID.substring(1,pageID.length)
             number = parseInt(number) - 1
             event.preventDefault();
             if(currentPage !== number){
@@ -215,7 +215,7 @@ option to browse additional entries by the numbered links below the data table.
     }
 
     function clearActive(){
-      for(i=1; i<10; i++){
+      for(i=1; i<=10; i++){
         $('#p'+i).attr('class', 'unbindPage');
       }
     }
