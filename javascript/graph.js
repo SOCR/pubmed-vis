@@ -17,19 +17,18 @@ option to browse additional entries by the numbered links below the data table.
 
 *//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-LIST_AMOUNT = 10;
-currentPage = 0;
-currentBatch = 0;
-totalCount = 0;
-currentInc = LIST_AMOUNT * currentPage;
-var coauthorArray = new Array();
-var search_term = '';
-
 (function(){
+  var LIST_AMOUNT = 10;
+  var currentPage = 0;
+  var currentBatch = 0;
+  var totalCount = 0;
+  var currentInc = LIST_AMOUNT * currentPage;
+  var coauthorArray = [];
+  var search_term = '';
   $(document).ready(function(){
     window.onload = function(){
         $('#paginate').hide();
-        document.getElementById("inputSearch").focus();
+        $("#inputSearch").focus();
       };
 
     $("#searchButton").click(function() {
@@ -40,8 +39,7 @@ var search_term = '';
       });
     // Search feature.
     function search(){
-      function coauthor(name, number)
-      {
+      function coauthor(name, number){
         this.name = name;
         this.number = number;
       }
@@ -79,134 +77,29 @@ var search_term = '';
 
           changePagination();
           // Unbind active links to results of search.
-          $('#p1').unbind('click');
-          $('#p2').unbind('click');
-          $('#p3').unbind('click');
-          $('#p4').unbind('click');
-          $('#p5').unbind('click');
-          $('#p6').unbind('click');
-          $('#p7').unbind('click');
-          $('#p8').unbind('click');
-          $('#p9').unbind('click');
-          $('#p10').unbind('click');
-          $('#prevBatch').unbind('click');
-          $('#nextBatch').unbind('click');
-          $('#p1').attr('class', 'active');
+          $(".unbindPage").unbind('click');
+          $(".unbindBatch").unbind('click');
+          $('#p1').attr('class', 'active unbindPage');
 
           showData(data, true);
           tree(data, coauthorArray);
 
           //Force page movement on pagination clicks
-          $("#p1").click(function() {
+          $(".unbindPage").click(function(){
+            var pageID = $(this).attr('id')
+            var number = pageID.substring(1,2)
+            number = parseInt(number) - 1
             event.preventDefault();
-            if(currentPage != 0){
+            if(currentPage != number){
               clearActive()
-              $('#p1').attr('class', 'active');
-              currentPage = 0;
+              $(this).attr('class', 'active unbindPage');
+              currentPage = number;
               currentInc = LIST_AMOUNT * currentPage;
               showData(data, false);
               tree(data, coauthorArray);
             }
           });
-          $("#p2").click(function() {
-            event.preventDefault();
-            if(currentPage != 1){
-              clearActive()
-              $('#p2').attr('class', 'active');
-              currentPage = 1;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p3").click(function() {
-            event.preventDefault();
-            if(currentPage != 2){
-              clearActive()
-              $('#p3').attr('class', 'active');
-              currentPage = 2;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p4").click(function() {
-            event.preventDefault();
-            if(currentPage != 3){
-              clearActive()
-              $('#p4').attr('class', 'active');
-              currentPage = 3;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p5").click(function() {
-            event.preventDefault();
-            if(currentPage != 4){
-              clearActive()
-              $('#p5').attr('class', 'active');
-              currentPage = 4;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p6").click(function() {
-            event.preventDefault();
-            if(currentPage != 5){
-              clearActive()
-              $('#p6').attr('class', 'active');
-              currentPage = 5;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p7").click(function() {
-            event.preventDefault();
-            if(currentPage != 6){
-              clearActive()
-              $('#p7').attr('class', 'active');
-              currentPage = 6;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p8").click(function() {
-            event.preventDefault();
-            if(currentPage != 7){
-              clearActive()
-              $('#p8').attr('class', 'active');
-              currentPage = 7;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p9").click(function() {
-            event.preventDefault();
-            if(currentPage != 8){
-              clearActive()
-              $('#p9').attr('class', 'active');
-              currentPage = 8;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-          $("#p10").click(function() {
-            event.preventDefault();
-            if(currentPage != 9){
-              clearActive()
-              $('#p10').attr('class', 'active');
-              currentPage = 9;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
+
           $("#prevBatch").click(function() {
             event.preventDefault(); 
             if(currentBatch != 0){
@@ -263,7 +156,7 @@ var search_term = '';
       }
       tablecontents += "</table>";
       
-      document.getElementById("articles").innerHTML = tablecontents;
+      $("#articles").html(tablecontents);
     }
 
     //Hides pagination numbers if over the limit
@@ -315,16 +208,19 @@ var search_term = '';
     }
 
     function clearActive(){
-      $('#p1').attr('class', '');
-      $('#p2').attr('class', '');
-      $('#p3').attr('class', '');
-      $('#p4').attr('class', '');
-      $('#p5').attr('class', '');
-      $('#p6').attr('class', '');
-      $('#p7').attr('class', '');
-      $('#p8').attr('class', '');
-      $('#p9').attr('class', '');
-      $('#p10').attr('class', '');
+      // for(i=1; i<10; i++){
+      //   $("'#p"+i+"'").click()
+      // }
+      $('#p1').attr('class', 'unbindPage');
+      $('#p2').attr('class', 'unbindPage');
+      $('#p3').attr('class', 'unbindPage');
+      $('#p4').attr('class', 'unbindPage');
+      $('#p5').attr('class', 'unbindPage');
+      $('#p6').attr('class', 'unbindPage');
+      $('#p7').attr('class', 'unbindPage');
+      $('#p8').attr('class', 'unbindPage');
+      $('#p9').attr('class', 'unbindPage');
+      $('#p10').attr('class', 'unbindPage');
     }
 
     function changePagination(){
@@ -362,16 +258,14 @@ var search_term = '';
       // Obtain data set of co-authors.
       var dataSet = makeDataSet();
       function makeDataSet(){
-        var included = new Array();
+        var included = [];
         var first = true;
         var dataSet='';
         dataSet += '{"name": "' + search_term + '", "size": 100000';
-        if(data.result.length != 0)
-        {
+        if(data.result.length != 0){
           dataSet += ',"children": [';
           //For each article
-          for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++)
-          {
+          for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++){
             //Find number of times author has worked with each coauthor
             for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
               if(data.result[currentInc + num].AuthorList[i].toLowerCase() != search_term.toLowerCase()){
