@@ -25,10 +25,13 @@ option to browse additional entries by the numbered links below the data table.
   var currentInc = LIST_AMOUNT * currentPage;
   var coauthorArray = [];
   var search_term = '';
+
+  idPaginate = $("#paginate")
+  idInputSearch = $("#inputSearch")
   $(document).ready(function(){
     window.onload = function(){
-        $('#paginate').hide();
-        $("#inputSearch").focus();
+        idPaginate.hide();
+        idInputSearch.focus();
       };
 
     $("#searchButton").click(function() {
@@ -45,7 +48,7 @@ option to browse additional entries by the numbered links below the data table.
       }
       //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
       //Search terms and parameters for entrezajax call
-      search_term = $("#inputSearch").val();
+      search_term = idInputSearch.val();
         args = {'apikey' : 'f6bc08acc6c7dbd33c60f04ac9d55f38',
                 'db'     : 'pubmed',
                 'term'   : $("#inputSearch").val(),
@@ -56,7 +59,7 @@ option to browse additional entries by the numbered links below the data table.
         $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
           if(data.entrezajax.error == true) {
             $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
-            $('#paginate').hide();
+            idPaginate.hide();
             return;
           }
 
@@ -125,7 +128,7 @@ option to browse additional entries by the numbered links below the data table.
     // Display table of results.
     function showData(data, page){
       if(page){
-        $('#paginate').show();
+        idPaginate.show();
         var size = data.result.length;
         hider(size);
       }
@@ -209,7 +212,7 @@ option to browse additional entries by the numbered links below the data table.
 
     function clearActive(){
       // for(i=1; i<10; i++){
-      //   $("'#p"+i+"'").click()
+      //   $('"#p'+i+'"').attr('class', 'unbindPage');
       // }
       $('#p1').attr('class', 'unbindPage');
       $('#p2').attr('class', 'unbindPage');
@@ -224,16 +227,20 @@ option to browse additional entries by the numbered links below the data table.
     }
 
     function changePagination(){
-      document.getElementById("page1").innerHTML = 1 + 10 * currentBatch;
-      document.getElementById("page2").innerHTML = 2 + 10 * currentBatch;
-      document.getElementById("page3").innerHTML = 3 + 10 * currentBatch;
-      document.getElementById("page4").innerHTML = 4 + 10 * currentBatch;
-      document.getElementById("page5").innerHTML = 5 + 10 * currentBatch;
-      document.getElementById("page6").innerHTML = 6 + 10 * currentBatch;
-      document.getElementById("page7").innerHTML = 7 + 10 * currentBatch;
-      document.getElementById("page8").innerHTML = 8 + 10 * currentBatch;
-      document.getElementById("page9").innerHTML = 9 + 10 * currentBatch;
-      document.getElementById("page10").innerHTML = 10 + 10 * currentBatch;
+      // for(i=1; i<10; i++){
+      //   var curID='"#page'+i+'"'
+      //   $("curID").html(i + 10 * currentBatch);
+      // }
+      $("#page1").html(1 + 10 * currentBatch);
+      $("#page2").html(2 + 10 * currentBatch);
+      $("#page3").html(3 + 10 * currentBatch);
+      $("#page4").html(4 + 10 * currentBatch);
+      $("#page5").html(5 + 10 * currentBatch);
+      $("#page6").html(6 + 10 * currentBatch);
+      $("#page7").html(7 + 10 * currentBatch);
+      $("#page8").html(8 + 10 * currentBatch);
+      $("#page9").html(9 + 10 * currentBatch);
+      $("#page10").html(10 + 10 * currentBatch);
     }
 
     function tree(data, coauthorArray){
@@ -401,7 +408,7 @@ option to browse additional entries by the numbered links below the data table.
         currentBatch = 0;
         currentInc = 0;
         clearActive();
-        $("#inputSearch").val(d.name);
+        idInputSearch.val(d.name);
         search();
       }
       // Right Click Feature: Link to author.
