@@ -17,7 +17,8 @@ option to browse additional entries by the numbered links below the data table.
 
 *//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-(function(){
+(function() {
+
   var LIST_AMOUNT = 10;
   var currentPage = 0;
   var currentBatch = 0;
@@ -26,13 +27,14 @@ option to browse additional entries by the numbered links below the data table.
   var coauthorArray = [];
   var search_term = '';
 
-  idPaginate = $("#paginate")
-  idInputSearch = $("#inputSearch")
-  idSearch = $("#searchButton")
-  idChart = $("#chart")
+  var idPaginate = $("#paginate");
+  var idInputSearch = $("#inputSearch");
+  var idSearch = $("#searchButton");
+  var idChart = $("#chart");
   
-  $(document).ready(function(){
-    window.onload = function(){
+  $(document).ready(function() {
+
+    window.onload = function() {
         idPaginate.hide();
         idInputSearch.focus();
       };
@@ -44,96 +46,130 @@ option to browse additional entries by the numbered links below the data table.
         clearActive();
         search();
       });
-    // Search feature.
-    function search(){
-      function coauthor(name, number){
+
+    // Search feature
+    function search() {
+
+      var unbindPageBtn = $(".unbindPage");
+      var prevBatchBtn = $('#prevBatch');
+      var nextBatchBtn = $('#nextBatch');
+
+      function Coauthor(name, number) {
         this.name = name;
         this.number = number;
       }
-      //api key:f6bc08acc6c7dbd33c60f04ac9d55f38
-      //Search terms and parameters for entrezajax call
-        args = {'apikey' : 'f6bc08acc6c7dbd33c60f04ac9d55f38',
-                'db'     : 'pubmed',
-                'term'   : search_term,
-                'retmax' : 100 + currentBatch * 100,          // maximum number of results from Esearch
-                'max'    : 100 + currentBatch * 100,          // maximum number of results passed to Esummary
-                'start'  : currentBatch * 100};
-        //Check if call is successful
-        $.getJSON('http://entrezajax.appspot.com/esearch+esummary?callback=?', args, function(data) {
-          if(data.entrezajax.error === true) {
-            $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error ' + data.entrezajax.error_message + '</p>');
+
+      var search_args = {
+        'db': 'pubmed',
+        'term': search_term,
+        'retmode': 'json',
+        'retstart': currentBatch * 100,
+        'retmax': 100 + currentBatch * 100  // maximum number of results from Esearch
+      };
+
+      var summary_args = {
+        'db': 'pubmed',
+        'id': '',
+        'retmode': 'json',
+        'retstart': currentBatch * 100,
+        'retmax': 100 + currentBatch * 100  // maximum number of results passed to Esummary
+      };
+
+      // check if call is successful
+      $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?', search_args, function(search_data) {
+
+        if(search_data.esearchresult) {
+          if (search_data.esearchresult.error) {
+
+            $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error '
+                + search_data.esearchresult.error_message + '</p>');
             idPaginate.hide();
-            return;
+
+          } else {
+
+            totalCount = search_data.esearchresult.count;
+            summary_args.id = search_data.esearchresult.idlist.toString();
+            $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
+                function(summary_data) {
+
+              // for loop adding all coauthors to array
+              coauthorArray = [];
+              $.each(summary_data.result, function (i, item) {
+                if (item.authors) {
+                  for (i = 0; i < item.authors.length; i++) {
+                    if (item.authors[i].name.toLowerCase() !== search_term.toLowerCase()) {
+                      var authorListed = $.grep(coauthorArray, function (e) {
+                        return e.name === item.authors[i].name;
+                      });
+                      if (authorListed.length === 0)
+                        coauthorArray.push(new Coauthor(item.authors[i].name, 1));
+                      else if (authorListed.length === 1)
+                        authorListed[0].number++;
+                    }
+                  }
+                } else
+                  console.log('Item' + item + ' doesnt have authors');
+              });
+
+              changePagination();
+              // unbind active links to results of search
+              unbindPageBtn.unbind('click');
+              prevBatchBtn.unbind('click');
+              nextBatchBtn.unbind('click');
+              $('#p1').attr('class', 'active unbindPage');
+
+              showData(summary_data, true);
+              tree(search_data, coauthorArray);
+
+              // force page movement on pagination clicks
+              unbindPageBtn.click(function () {
+                var pageID = $(this).attr('id')
+                var number = pageID.substring(1, pageID.length)
+                number = parseInt(number) - 1
+                event.preventDefault();
+                if (currentPage !== number) {
+                  clearActive()
+                  $(this).attr('class', 'active unbindPage');
+                  currentPage = number;
+                  currentInc = LIST_AMOUNT * currentPage;
+                  showData(data, false);
+                  tree(data, coauthorArray);
+                }
+              });
+              prevBatchBtn.click(function () {
+                event.preventDefault();
+                if (currentBatch !== 0) {
+                  currentInc = 0;
+                  clearActive();
+                  currentBatch--;
+                  changePagination();
+                  search();
+                }
+              });
+              nextBatchBtn.click(function () {
+                event.preventDefault();
+                if (currentBatch * 100 <= totalCount) {
+                  currentInc = 0;
+                  clearActive();
+                  currentBatch++;
+                  changePagination();
+                  search();
+                }
+              })
+            });
           }
-
-          //For loop adding all coauthors to array
-          totalCount = data.entrezajax.count;
-          coauthorArray.length = 0;
-          $.each(data.result, function(i, item){
-            for(var i = 0; i < item.AuthorList.length; i ++) {
-              if(item.AuthorList[i].toLowerCase() !== search_term.toLowerCase()){
-                var authorListed = $.grep(coauthorArray, function(e){ return e.name === item.AuthorList[i]; })
-                if(authorListed.length === 0)
-                  coauthorArray.push(new coauthor(item.AuthorList[i],1));
-                else if (authorListed.length === 1)
-                  authorListed[0].number++;
-              }
-            }
-          })
-
-          changePagination();
-          // Unbind active links to results of search.
-          $(".unbindPage").unbind('click');
-          $('#prevBatch').unbind('click');
-          $('#nextBatch').unbind('click');
-          $('#p1').attr('class', 'active unbindPage');
-
-          showData(data, true);
-          tree(data, coauthorArray);
-
-          //Force page movement on pagination clicks
-          $(".unbindPage").click(function(){
-            var pageID = $(this).attr('id')
-            var number = pageID.substring(1,pageID.length)
-            number = parseInt(number) - 1
-            event.preventDefault();
-            if(currentPage !== number){
-              clearActive()
-              $(this).attr('class', 'active unbindPage');
-              currentPage = number;
-              currentInc = LIST_AMOUNT * currentPage;
-              showData(data, false);
-              tree(data, coauthorArray);
-            }
-          });
-
-          $("#prevBatch").click(function() {
-            event.preventDefault(); 
-            if(currentBatch !== 0){
-              currentInc = 0;
-              clearActive()
-              currentBatch--;
-              changePagination();
-              search();
-            } 
-          });
-          $("#nextBatch").click(function() {
-            event.preventDefault();
-            if(currentBatch * 100 <= totalCount){
-              currentInc = 0;
-              clearActive()
-              currentBatch++;
-              changePagination();
-              search();
-            }
-          });
-        });
+        } else {
+          $("#articles").html('<p>' + 'Error: cannot retrieve data.' + '</p>');
+          idPaginate.hide();
+        }
+      })
     }
-    // Display table of results.
+
+    // Display table of results
     function showData(data, page){
       if(page){
         idPaginate.show();
-        var size = data.result.length;
+        var size = data.result.uids.length;
         hider(size);
       }
 
@@ -145,11 +181,11 @@ option to browse additional entries by the numbered links below the data table.
       for (var num = 0; num < LIST_AMOUNT && (currentBatch * 100 + currentInc + num) < totalCount; num ++)
       {
         var author_list = '';
-        for(var i = 0; i < item[currentInc + num].AuthorList.length; i ++) {
+        for(var i = 0; i < item[currentInc + num].authors.length; i ++) {
           if(i !== 0) {
             author_list += ', ';
           }
-          author_list += item[currentInc + num].AuthorList[i];
+          author_list += item[currentInc + num].authors[i].name;
         }
         if(num % 2 === 0)
           tablecontents += "<tr>";
@@ -166,7 +202,7 @@ option to browse additional entries by the numbered links below the data table.
       $("#articles").html(tablecontents);
     }
 
-    //Hides pagination numbers if over the limit
+    // Hides pagination numbers if over the limit
     function hider(size){
       if(size <= 90)
         $('#p10').hide();
@@ -257,18 +293,18 @@ option to browse additional entries by the numbered links below the data table.
           //For each article
           for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++){
             //Find number of times author has worked with each coauthor
-            for(var i = 0; i < data.result[currentInc +  num].AuthorList.length; i++) {
-              if(data.result[currentInc + num].AuthorList[i].toLowerCase() !== search_term.toLowerCase()){
-                var checkAuthor = $.grep(included, function(e){ return e.name === data.result[currentInc + num].AuthorList[i]; })
+            for(var i = 0; i < data.result[currentInc +  num].authors.length; i++) {
+              if(data.result[currentInc + num].authors[i].toLowerCase() !== search_term.toLowerCase()){
+                var checkAuthor = $.grep(included, function(e){ return e.name === data.result[currentInc + num].authors[i]; })
                 if(checkAuthor.length === 0){
-                  var authorListed = $.grep(coauthorArray, function(e){ return e.name === data.result[currentInc + num].AuthorList[i]; })
+                  var authorListed = $.grep(coauthorArray, function(e){ return e.name === data.result[currentInc + num].authors[i]; })
                   included.push(authorListed[0]);
                   if(first){
-                    dataSet += '{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                    dataSet += '{"name": "' + data.result[currentInc + num].authors[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
                     first = false;
                   }
                   else
-                    dataSet += ',{"name": "' + data.result[currentInc + num].AuthorList[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                    dataSet += ',{"name": "' + data.result[currentInc + num].authors[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
                 }
               }
             }
@@ -444,7 +480,8 @@ option to browse additional entries by the numbered links below the data table.
       }
 
     }
-    // Run-time Check.
+
+    // Run-time check
     var waitForFinalEvent = (function () {
           var timers = {};
           return function (callback, ms, uniqueId) {
@@ -458,5 +495,5 @@ option to browse additional entries by the numbered links below the data table.
           };
       })()
 
-  }); //document ready
+  });
 })();
