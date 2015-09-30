@@ -119,7 +119,7 @@ option to browse additional entries by the numbered links below the data table.
               $('#p1').attr('class', 'active unbindPage');
 
               showData(summary_data, true);
-              tree(search_data, coauthorArray);
+              tree(summary_data, coauthorArray);
 
               // force page movement on pagination clicks
               unbindPageBtn.click(function () {
@@ -166,44 +166,51 @@ option to browse additional entries by the numbered links below the data table.
     }
 
     // Display table of results
-    function showData(data, page){
-      if(page){
+    function showData(data, page) {
+      if(page) {
         idPaginate.show();
         var size = data.result.uids.length;
         hider(size);
       }
 
-      //Create table to show data of articles
-      var tablecontents = "";
+      // create table to show data of articles
+      var tablecontents = '';
       tablecontents = '<table> <tr> <th>Title</th> <th>Journal</th><th>Date</th><th>Coauthors</th> </tr>';
+
       var item = data.result;
-      //Create list of authors for each article
-      for (var num = 0; num < LIST_AMOUNT && (currentBatch * 100 + currentInc + num) < totalCount; num ++)
-      {
+      // create list of authors for each article
+      for (var num = 0; num < LIST_AMOUNT && (currentBatch * 100 + currentInc + num) < totalCount; num ++) {
         var author_list = '';
-        for(var i = 0; i < item[currentInc + num].authors.length; i ++) {
-          if(i !== 0) {
+        var currPaper = item[item.uids[currentInc + num]];
+        for(var i = 0; i < currPaper.authors.length; i ++) {
+          if(i !== 0)
             author_list += ', ';
-          }
-          author_list += item[currentInc + num].authors[i].name;
+          author_list += currPaper.authors[i].name;
+        }
+        var currPaperId = 0;
+        for(i = 0; i < currPaper.articleids.length; i++) {
+          if(currPaper.articleids[i].idtype == 'pubmed')
+            currPaperId = currPaper.articleids[i].value;
         }
         if(num % 2 === 0)
-          tablecontents += "<tr>";
+          tablecontents += '<tr>';
         else
-          tablecontents += "<tr class='alt'>";
-        tablecontents += "<td>" + '<a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + item[currentInc + num].ArticleIds.pubmed + '\'>' + item[currentInc + num].Title + '</a>' + "</td>";
-        tablecontents += "<td>" + item[currentInc + num].FullJournalName + "</td>";
-        tablecontents += "<td>" + item[currentInc + num].PubDate + "</td>";
-        tablecontents += "<td>" + author_list + "</td>";
-        tablecontents += "</tr>";
+          tablecontents += '<tr class="alt">';
+
+        tablecontents += '<td>' + '<a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + currPaperId + '\'>' +
+            currPaper.title + '</a>' + '</td>';
+        tablecontents += '<td>' + currPaper.fulljournalname + '</td>';
+        tablecontents += '<td>' + currPaper.pubdate + '</td>';
+        tablecontents += '<td>' + author_list + '</td>';
+        tablecontents += '</tr>';
       }
-      tablecontents += "</table>";
+      tablecontents += '</table>';
       
-      $("#articles").html(tablecontents);
+      $('#articles').html(tablecontents);
     }
 
     // Hides pagination numbers if over the limit
-    function hider(size){
+    function hider(size) {
       if(size <= 90)
         $('#p10').hide();
       else
@@ -250,19 +257,19 @@ option to browse additional entries by the numbered links below the data table.
         $('#nextBatch').attr('class', '');
     }
 
-    function clearActive(){
-      for(i=1; i<=10; i++){
+    function clearActive() {
+      for(i=1; i<=10; i++) {
         $('#p'+i).attr('class', 'unbindPage');
       }
     }
 
-    function changePagination(){
-      for(i=1; i<=10; i++){
-        $('#page'+i).html(i + 10 * currentBatch);
+    function changePagination() {
+      for(i = 1; i <= 10; i++) {
+        $('#page' + i).html(i + 10 * currentBatch);
       }
     }
 
-    function tree(data, coauthorArray){
+    function tree(data, coauthorArray) {
       $(window).resize(function() {
         waitForFinalEvent(function() {
           removeGraph();
@@ -271,40 +278,38 @@ option to browse additional entries by the numbered links below the data table.
       });
 
       var removeGraph = function() {
-        svg = d3.select('#chart svg');
+        var svg = d3.select('#chart svg');
         svg.on('click', null);
         svg.on('dblclick', null);
         svg.on('mouseover', null);
         svg.on('mouseout', null);
 
         idChart.empty();
-      }
+      };
 
-      removeGraph();
-      // Obtain data set of co-authors.
-      var dataSet = makeDataSet();
-      function makeDataSet(){
+      var makeDataSet = function () {
         var included = [];
         var first = true;
-        var dataSet='';
+        var dataSet = '';
         dataSet += '{"name": "' + search_term + '", "size": 100000';
-        if(data.result.length !== 0){
+        if(data.result.uids.length !== 0) {
           dataSet += ',"children": [';
-          //For each article
-          for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++){
-            //Find number of times author has worked with each coauthor
-            for(var i = 0; i < data.result[currentInc +  num].authors.length; i++) {
-              if(data.result[currentInc + num].authors[i].toLowerCase() !== search_term.toLowerCase()){
-                var checkAuthor = $.grep(included, function(e){ return e.name === data.result[currentInc + num].authors[i]; })
-                if(checkAuthor.length === 0){
-                  var authorListed = $.grep(coauthorArray, function(e){ return e.name === data.result[currentInc + num].authors[i]; })
+          // for each article
+          for(var num = 0; (num < LIST_AMOUNT) && (currentBatch * 100 + currentInc + num) < totalCount; num++) {
+            // find number of times author has worked with each coauthor
+            var currPaper = data.result[data.result.uids[currentInc + num]];
+            for(var i = 0; i < currPaper.authors.length; i++) {
+              if(currPaper.authors[i].name.toLowerCase() !== search_term.toLowerCase()) {
+                var checkAuthor = $.grep(included, function(e) { return e.name === currPaper.authors[i].name; });
+                if(checkAuthor.length === 0) {
+                  var authorListed = $.grep(coauthorArray, function(e) { return e.name === currPaper.authors[i].name; });
                   included.push(authorListed[0]);
-                  if(first){
-                    dataSet += '{"name": "' + data.result[currentInc + num].authors[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                  if(first)
                     first = false;
-                  }
                   else
-                    dataSet += ',{"name": "' + data.result[currentInc + num].authors[i] + '", "size": ' + authorListed[0].number * 3000 + '}';
+                    dataSet += ',';
+                  dataSet += '{"name": "' + currPaper.authors[i].name + '", "size": ' +
+                      authorListed[0].number * 3000 + '}';
                 }
               }
             }
@@ -313,9 +318,14 @@ option to browse additional entries by the numbered links below the data table.
         }
         dataSet += '}';
         return dataSet;
-      }
+      };
+
+      removeGraph();
+
+      // obtain data set of co-authors
+      var dataSet = makeDataSet();
       
-      // Size of window graph is present.
+      // size of window graph is present
       var w = idChart.width(),
           h = idChart.height(),
           root;
@@ -328,11 +338,10 @@ option to browse additional entries by the numbered links below the data table.
 
       var vis = d3.select("#chart").append("svg:svg")
           .attr("width", w)
-          .attr("height", h)
+          .attr("height", h);
 
-      var json = jQuery.parseJSON(dataSet);
-        root = json;
-        update();
+      root = jQuery.parseJSON(dataSet);
+      update();
 
       function update() {
         var nodes = flatten(root),
@@ -444,7 +453,7 @@ option to browse additional entries by the numbered links below the data table.
       }
 
 
-      // Returns a list of all nodes under the root.
+      // Returns a list of all nodes under the root
       function flatten(root) {
         var nodes = [], i = 0;
 
@@ -482,7 +491,7 @@ option to browse additional entries by the numbered links below the data table.
     }
 
     // Run-time check
-    var waitForFinalEvent = (function () {
+    var waitForFinalEvent = (function() {
           var timers = {};
           return function (callback, ms, uniqueId) {
               if (!uniqueId) {
