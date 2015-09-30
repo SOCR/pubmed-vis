@@ -2,6 +2,9 @@
 PubMed Visualization
 Creators: Patrick Tan, Pratyush Pati, Gary Chen
 
+Editions:
+2015/09, by Alexandr Kalinin: fixed calls to new E-Utils PubMed API and processing of returned structure
+
 The PubMed Visualization applet is a graphical representation of the PubMed database of biomedical 
 literature ranging from published journals and online books. The search criteria allows users 
 to find articles based on titles, authors, and topics. The graph is rendered by the D3 JavaScript Library
@@ -40,7 +43,7 @@ option to browse additional entries by the numbered links below the data table.
       };
 
     idSearch.click(function() {
-        search_term = idInputSearch.val();
+        search_term = idInputSearch.val() ? idInputSearch.val() : idInputSearch.attr('placeholder');
         currentBatch = 0;
         currentInc = 0;
         clearActive();
@@ -132,8 +135,8 @@ option to browse additional entries by the numbered links below the data table.
                   $(this).attr('class', 'active unbindPage');
                   currentPage = number;
                   currentInc = LIST_AMOUNT * currentPage;
-                  showData(data, false);
-                  tree(data, coauthorArray);
+                  showData(summary_data, false);
+                  tree(summary_data, coauthorArray);
                 }
               });
               prevBatchBtn.click(function () {
@@ -258,18 +261,17 @@ option to browse additional entries by the numbered links below the data table.
     }
 
     function clearActive() {
-      for(i=1; i<=10; i++) {
-        $('#p'+i).attr('class', 'unbindPage');
-      }
+      for(var i = 1; i <= 10; i++)
+        $('#p' + i).attr('class', 'unbindPage');
     }
 
     function changePagination() {
-      for(i = 1; i <= 10; i++) {
+      for(var i = 1; i <= 10; i++)
         $('#page' + i).html(i + 10 * currentBatch);
-      }
     }
 
     function tree(data, coauthorArray) {
+
       $(window).resize(function() {
         waitForFinalEvent(function() {
           removeGraph();
