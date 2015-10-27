@@ -1,10 +1,7 @@
-Facebook Visualization Project
+[SOCR](http://socr.umich.edu) PubMed Visualization
 =========
 
-The Facebook Visualization will take a Username and display the user's information along with his friends and extended friends through a d3 collapsible force layout.
-
-##Goal
-The Facebook Visualization will be displayed with HTML5 and bootstrap. It will retrieve the data of a specified user using create a collapsible  and a hierarchy from data from the Facebook api and ajax calls. The data will then be displayed in a collapsible force layout made by d3.
+The PubMed Navigator takes author, topic or title as a search term and retrieves the corresponding data of a specified search term from the PubMed API via AJAX calls. Then authors related to the search term are displayed using a collapsible force layout made by D3js. Double click on author's name performs another search and displays co-authors. Right click to search in google. List of corresponding papers is diplayed in the table at the bottom.
 
 ##Packages/Technologies
 
