@@ -34,6 +34,8 @@ option to browse additional entries by the numbered links below the data table.
   var idInputSearch = $("#inputSearch");
   var idSearch = $("#searchButton");
   var idChart = $("#chart");
+  var classSearch = "icon-search";
+  var classRefresh = "icon-refresh icon-refresh-animate";
   
   $(document).ready(function() {
 
@@ -44,6 +46,7 @@ option to browse additional entries by the numbered links below the data table.
 
     idSearch.click(function() {
         search_term = idInputSearch.val() ? idInputSearch.val() : idInputSearch.attr('placeholder');
+        idInputSearch.val(search_term);
         currentBatch = 0;
         currentInc = 0;
         clearActive();
@@ -78,9 +81,9 @@ option to browse additional entries by the numbered links below the data table.
         'retmax': 100 + currentBatch * 100  // maximum number of results passed to Esummary
       };
 
+      idSearch.removeClass(classSearch).addClass(classRefresh);
       // check if call is successful
       $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?', search_args, function(search_data) {
-
         if(search_data.esearchresult) {
           if (search_data.esearchresult.error) {
 
@@ -95,71 +98,72 @@ option to browse additional entries by the numbered links below the data table.
             $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
                 function(summary_data) {
 
-              // for loop adding all coauthors to array
-              coauthorArray = [];
-              $.each(summary_data.result, function (i, item) {
-                if (item.authors) {
-                  for (i = 0; i < item.authors.length; i++) {
-                    if (item.authors[i].name.toLowerCase() !== search_term.toLowerCase()) {
-                      var authorListed = $.grep(coauthorArray, function (e) {
-                        return e.name === item.authors[i].name;
-                      });
-                      if (authorListed.length === 0)
-                        coauthorArray.push(new Coauthor(item.authors[i].name, 1));
-                      else if (authorListed.length === 1)
-                        authorListed[0].number++;
-                    }
-                  }
-                } else
-                  console.log('Item' + item + ' doesnt have authors');
-              });
+                  idSearch.removeClass(classRefresh).addClass(classSearch);
+                  // for loop adding all coauthors to array
+                  coauthorArray = [];
+                  $.each(summary_data.result, function (i, item) {
+                    if (item.authors) {
+                      for (i = 0; i < item.authors.length; i++) {
+                        if (item.authors[i].name.toLowerCase() !== search_term.toLowerCase()) {
+                          var authorListed = $.grep(coauthorArray, function (e) {
+                            return e.name === item.authors[i].name;
+                          });
+                          if (authorListed.length === 0)
+                            coauthorArray.push(new Coauthor(item.authors[i].name, 1));
+                          else if (authorListed.length === 1)
+                            authorListed[0].number++;
+                        }
+                      }
+                    } else
+                      console.log('Item' + item + ' doesnt have authors');
+                  });
 
-              changePagination();
-              // unbind active links to results of search
-              unbindPageBtn.unbind('click');
-              prevBatchBtn.unbind('click');
-              nextBatchBtn.unbind('click');
-              $('#p1').attr('class', 'active unbindPage');
+                  changePagination();
+                  // unbind active links to results of search
+                  unbindPageBtn.unbind('click');
+                  prevBatchBtn.unbind('click');
+                  nextBatchBtn.unbind('click');
+                  $('#p1').attr('class', 'active unbindPage');
 
-              showData(summary_data, true);
-              tree(summary_data, coauthorArray);
-
-              // force page movement on pagination clicks
-              unbindPageBtn.click(function () {
-                var pageID = $(this).attr('id')
-                var number = pageID.substring(1, pageID.length)
-                number = parseInt(number) - 1
-                event.preventDefault();
-                if (currentPage !== number) {
-                  clearActive()
-                  $(this).attr('class', 'active unbindPage');
-                  currentPage = number;
-                  currentInc = LIST_AMOUNT * currentPage;
-                  showData(summary_data, false);
+                  showData(summary_data, true);
                   tree(summary_data, coauthorArray);
-                }
-              });
-              prevBatchBtn.click(function () {
-                event.preventDefault();
-                if (currentBatch !== 0) {
-                  currentInc = 0;
-                  clearActive();
-                  currentBatch--;
-                  changePagination();
-                  search();
-                }
-              });
-              nextBatchBtn.click(function () {
-                event.preventDefault();
-                if (currentBatch * 100 <= totalCount) {
-                  currentInc = 0;
-                  clearActive();
-                  currentBatch++;
-                  changePagination();
-                  search();
-                }
-              })
-            });
+
+                  // force page movement on pagination clicks
+                  unbindPageBtn.click(function () {
+                    var pageID = $(this).attr('id')
+                    var number = pageID.substring(1, pageID.length)
+                    number = parseInt(number) - 1
+                    event.preventDefault();
+                    if (currentPage !== number) {
+                      clearActive()
+                      $(this).attr('class', 'active unbindPage');
+                      currentPage = number;
+                      currentInc = LIST_AMOUNT * currentPage;
+                      showData(summary_data, false);
+                      tree(summary_data, coauthorArray);
+                    }
+                  });
+                  prevBatchBtn.click(function () {
+                    event.preventDefault();
+                    if (currentBatch !== 0) {
+                      currentInc = 0;
+                      clearActive();
+                      currentBatch--;
+                      changePagination();
+                      search();
+                    }
+                  });
+                  nextBatchBtn.click(function () {
+                    event.preventDefault();
+                    if (currentBatch * 100 <= totalCount) {
+                      currentInc = 0;
+                      clearActive();
+                      currentBatch++;
+                      changePagination();
+                      search();
+                    }
+                  })
+                });
           }
         } else {
           $("#articles").html('<p>' + 'Error: cannot retrieve data.' + '</p>');
