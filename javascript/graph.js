@@ -30,10 +30,11 @@ option to browse additional entries by the numbered links below the data table.
   var coauthorArray = [];
   var search_term = '';
 
-  var idPaginate = $("#paginate");
-  var idInputSearch = $("#inputSearch");
-  var idSearch = $("#searchButton");
-  var idChart = $("#chart");
+  var idPaginate = $(".paginate");
+  var idInputSearch = $(".inputSearch");
+  var idSearch = $(".searchButton");
+  var idChart = $(".chart");
+  var iconSearch = $('.searchIcon');
   var classSearch = "icon-search";
   var classRefresh = "icon-refresh icon-refresh-animate";
   
@@ -57,8 +58,8 @@ option to browse additional entries by the numbered links below the data table.
     function search() {
 
       var unbindPageBtn = $(".unbindPage");
-      var prevBatchBtn = $('#prevBatch');
-      var nextBatchBtn = $('#nextBatch');
+      var prevBatchBtn = $('.prevBatch');
+      var nextBatchBtn = $('.nextBatch');
 
       function Coauthor(name, number) {
         this.name = name;
@@ -81,13 +82,13 @@ option to browse additional entries by the numbered links below the data table.
         'retmax': 100 + currentBatch * 100  // maximum number of results passed to Esummary
       };
 
-      idSearch.removeClass(classSearch).addClass(classRefresh);
+      iconSearch.removeClass(classSearch).addClass(classRefresh);
       // check if call is successful
       $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?', search_args, function(search_data) {
         if(search_data.esearchresult) {
           if (search_data.esearchresult.error) {
 
-            $("#articles").html('<p>' + 'Sorry - EntrezAjax failed with error '
+            $(".articles").html('<p>' + 'Sorry - EntrezAjax failed with error '
                 + search_data.esearchresult.error_message + '</p>');
             idPaginate.hide();
 
@@ -98,7 +99,7 @@ option to browse additional entries by the numbered links below the data table.
             $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
                 function(summary_data) {
 
-                  idSearch.removeClass(classRefresh).addClass(classSearch);
+                  iconSearch.removeClass(classRefresh).addClass(classSearch);
                   // for loop adding all coauthors to array
                   coauthorArray = [];
                   $.each(summary_data.result, function (i, item) {
@@ -123,20 +124,20 @@ option to browse additional entries by the numbered links below the data table.
                   unbindPageBtn.unbind('click');
                   prevBatchBtn.unbind('click');
                   nextBatchBtn.unbind('click');
-                  $('#p1').attr('class', 'active unbindPage');
+                  $('.p1').attr('class', 'active unbindPage');
 
                   showData(summary_data, true);
                   tree(summary_data, coauthorArray);
 
                   // force page movement on pagination clicks
                   unbindPageBtn.click(function () {
-                    var pageID = $(this).attr('id')
-                    var number = pageID.substring(1, pageID.length)
-                    number = parseInt(number) - 1
+                    var pageID = $(this).attr('id');
+                    var number = pageID.substring(1, pageID.length);
+                    number = parseInt(number) - 1;
                     event.preventDefault();
                     if (currentPage !== number) {
-                      clearActive()
-                      $(this).attr('class', 'active unbindPage');
+                      clearActive();
+                      $(this).attr('class', 'active unbindPage '.concat(pageID.toString()));
                       currentPage = number;
                       currentInc = LIST_AMOUNT * currentPage;
                       showData(summary_data, false);
@@ -166,7 +167,7 @@ option to browse additional entries by the numbered links below the data table.
                 });
           }
         } else {
-          $("#articles").html('<p>' + 'Error: cannot retrieve data.' + '</p>');
+          $(".articles").html('<p>' + 'Error: cannot retrieve data.' + '</p>');
           idPaginate.hide();
         }
       })
@@ -213,65 +214,65 @@ option to browse additional entries by the numbered links below the data table.
       }
       tablecontents += '</table>';
       
-      $('#articles').html(tablecontents);
+      $('.articles').html(tablecontents);
     }
 
     // Hides pagination numbers if over the limit
     function hider(size) {
       if(size <= 90)
-        $('#p10').hide();
+        $('.p10').hide();
       else
-        $('#p10').show();
+        $('.p10').show();
       if(size <= 80)
-        $('#p9').hide();
+        $('.p9').hide();
       else
-        $('#p9').show();
+        $('.p9').show();
       if(size <= 70)
-        $('#p8').hide();
+        $('.p8').hide();
       else
-        $('#p8').show();
+        $('.p8').show();
       if(size <= 60)
-        $('#p7').hide();
+        $('.p7').hide();
       else
-        $('#p7').show();
+        $('.p7').show();
       if(size <= 50)
-        $('#p6').hide();
+        $('.p6').hide();
       else
-        $('#p6').show();
+        $('.p6').show();
       if(size <= 40)
-        $('#p5').hide();
+        $('.p5').hide();
       else
-        $('#p5').show();
+        $('.p5').show();
       if(size <= 30)
-        $('#p4').hide();
+        $('.p4').hide();
       else
-        $('#p4').show();
+        $('.p4').show();
       if(size <= 20)
-        $('#p3').hide();
+        $('.p3').hide();
       else
-        $('#p3').show();
+        $('.p3').show();
       if(size <= 10)
-        $('#p2').hide();
+        $('.p2').hide();
       else
-        $('#p2').show();
+        $('.p2').show();
       if(currentBatch === 0)
-        $('#prevBatch').attr('class', 'disabled');
+        $('.prevBatch').attr('class', 'disabled');
       else
-        $('#prevBatch').attr('class', '');
+        $('.prevBatch').attr('class', '');
       if((currentBatch + 1) * 100 > totalCount)
-        $('#nextBatch').attr('class', 'disabled');
+        $('.nextBatch').attr('class', 'disabled');
       else
-        $('#nextBatch').attr('class', '');
+        $('.nextBatch').attr('class', '');
     }
 
     function clearActive() {
       for(var i = 1; i <= 10; i++)
-        $('#p' + i).attr('class', 'unbindPage');
+        $('.p' + i).attr('class', 'unbindPage');
     }
 
     function changePagination() {
       for(var i = 1; i <= 10; i++)
-        $('#page' + i).html(i + 10 * currentBatch);
+        $('.page' + i).html(i + 10 * currentBatch);
     }
 
     function tree(data, coauthorArray) {
