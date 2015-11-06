@@ -51,7 +51,7 @@
       inputSearch.val(search_term);
       currentBatch = 0;
       currentInc = 0;
-      clearActive();
+      //clearActive();
       search();
     });
 
@@ -155,7 +155,7 @@
                 event.preventDefault();
                 if (currentPage !== number) {
                   clearActive();
-                  $(this).attr('class', 'active unbindPage '.concat(pageID.toString()));
+                  $(this).removeClass().addClass('active unbindPage '.concat(pageID.toString()));
                   currentPage = number;
                   currentInc = LIST_AMOUNT * currentPage;
                   showData(summary_data, false);
@@ -285,7 +285,7 @@
 
     function clearActive() {
       for(var i = 1; i <= 10; i++)
-        $('.p' + i).attr('class', 'unbindPage');
+        $('.p' + i).removeClass().addClass('unbindPage p'.concat(i.toString()));
     }
 
     function changePagination() {
