@@ -99,7 +99,7 @@
       tablePaginate.hide();
 
       // check if call is successful
-      $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?', search_args, function(search_data) {
+      $.getJSON('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?', search_args, function(search_data) {
         if(search_data.esearchresult) {
           if (search_data.esearchresult.error) {
 
@@ -111,7 +111,7 @@
 
           totalCount = search_data.esearchresult.count;
           summary_args.id = search_data.esearchresult.idlist.toString();
-          $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
+          $.getJSON('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
             function(summary_data) {
 
               iconSearch.removeClass(classRefresh).addClass(classSearch);
