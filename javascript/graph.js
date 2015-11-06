@@ -1,24 +1,24 @@
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-PubMed Visualization
-Creators: Patrick Tan, Pratyush Pati, Gary Chen
+ PubMed Visualization
+ Creators: Patrick Tan, Pratyush Pati, Gary Chen
 
-Editions:
-2015/09, by Alexandr Kalinin: fixed calls to new E-Utils PubMed API and processing of returned structure
+ Editions:
+ 2015/09, by Alexandr Kalinin: fixed calls to new E-Utils PubMed API and processing of returned structure
 
-The PubMed Visualization applet is a graphical representation of the PubMed database of biomedical 
-literature ranging from published journals and online books. The search criteria allows users 
-to find articles based on titles, authors, and topics. The graph is rendered by the D3 JavaScript Library
-which displays your search item in the middle and the authors and co-authors related to it by the connected
-nodes. The size of the nodes varies depending how well the author or co-author is related with the searched 
-item, such that closely related topics or authors and co-authors that often work together will appear larger.
-Users can use a mouse-over to amplify the node and a double-click searches the selected item, while rendering 
-a new graph. Additionally, a right-click allows user to Google search the name which will be displayed in a new
-window or tab. Below the graph, the user is shown a data table consisting of titles, journal name, date of 
-publication, and co-authors of the searched item. A single-click on the titles allows users to go directly to 
-the article link on the PubMed website. The user is shown the first ten entries upon a search and has the 
-option to browse additional entries by the numbered links below the data table. 
+ The PubMed Visualization applet is a graphical representation of the PubMed database of biomedical
+ literature ranging from published journals and online books. The search criteria allows users
+ to find articles based on titles, authors, and topics. The graph is rendered by the D3 JavaScript Library
+ which displays your search item in the middle and the authors and co-authors related to it by the connected
+ nodes. The size of the nodes varies depending how well the author or co-author is related with the searched
+ item, such that closely related topics or authors and co-authors that often work together will appear larger.
+ Users can use a mouse-over to amplify the node and a double-click searches the selected item, while rendering
+ a new graph. Additionally, a right-click allows user to Google search the name which will be displayed in a new
+ window or tab. Below the graph, the user is shown a data table consisting of titles, journal name, date of
+ publication, and co-authors of the searched item. A single-click on the titles allows users to go directly to
+ the article link on the PubMed website. The user is shown the first ten entries upon a search and has the
+ option to browse additional entries by the numbered links below the data table.
 
-*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+ *//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 (function() {
 
@@ -30,34 +30,45 @@ option to browse additional entries by the numbered links below the data table.
   var coauthorArray = [];
   var search_term = '';
 
-  var idPaginate = $(".paginate");
-  var idInputSearch = $(".inputSearch");
-  var idSearch = $(".searchButton");
+  var tablePaginate = $(".paginate");
+  var inputSearch = $(".inputSearch");
+  var buttonSearch = $(".searchButton");
   var idChart = $(".chart");
   var iconSearch = $('.searchIcon');
   var classSearch = "icon-search";
   var classRefresh = "icon-refresh icon-refresh-animate";
-  
+
   $(document).ready(function() {
 
     window.onload = function() {
-        idPaginate.hide();
-        idInputSearch.focus();
-      };
+      tablePaginate.hide();
+      inputSearch.focus();
+    };
 
-    idSearch.click(function() {
-        search_term = idInputSearch.val() ? idInputSearch.val() : idInputSearch.attr('placeholder');
-        idInputSearch.val(search_term);
-        currentBatch = 0;
-        currentInc = 0;
-        clearActive();
-        search();
-      });
+    buttonSearch.click(function() {
+      search_term = inputSearch.val() ? inputSearch.val() : inputSearch.attr('placeholder');
+      inputSearch.val(search_term);
+      currentBatch = 0;
+      currentInc = 0;
+      clearActive();
+      search();
+    });
+
+    $('.inputSearch').keydown(function(event){
+      if(event.which == 13){
+        buttonSearch.trigger('click');
+        event.preventDefault();
+      }
+    });
+
+    $('.chart').bind("contextmenu",function(e){
+      return false; // disable the context menu
+    });
 
     // Search feature
     function search() {
 
-      var unbindPageBtn = $(".unbindPage");
+      var unbindPageBtn = $('.unbindPage');
       var prevBatchBtn = $('.prevBatch');
       var nextBatchBtn = $('.nextBatch');
 
@@ -89,86 +100,86 @@ option to browse additional entries by the numbered links below the data table.
           if (search_data.esearchresult.error) {
 
             $(".articles").html('<p>' + 'Sorry - EntrezAjax failed with error '
-                + search_data.esearchresult.error_message + '</p>');
-            idPaginate.hide();
+              + search_data.esearchresult.error_message + '</p>');
+            tablePaginate.hide();
 
           } else {
 
-            totalCount = search_data.esearchresult.count;
-            summary_args.id = search_data.esearchresult.idlist.toString();
-            $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
-                function(summary_data) {
+          totalCount = search_data.esearchresult.count;
+          summary_args.id = search_data.esearchresult.idlist.toString();
+          $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?', summary_args,
+            function(summary_data) {
 
-                  iconSearch.removeClass(classRefresh).addClass(classSearch);
-                  // for loop adding all coauthors to array
-                  coauthorArray = [];
-                  $.each(summary_data.result, function (i, item) {
-                    if (item.authors) {
-                      for (i = 0; i < item.authors.length; i++) {
-                        if (item.authors[i].name.toLowerCase() !== search_term.toLowerCase()) {
-                          var authorListed = $.grep(coauthorArray, function (e) {
-                            return e.name === item.authors[i].name;
-                          });
-                          if (authorListed.length === 0)
-                            coauthorArray.push(new Coauthor(item.authors[i].name, 1));
-                          else if (authorListed.length === 1)
-                            authorListed[0].number++;
-                        }
-                      }
-                    } else
-                      console.log('Item' + item + ' doesnt have authors');
-                  });
+              iconSearch.removeClass(classRefresh).addClass(classSearch);
+              // for loop adding all coauthors to array
+              coauthorArray = [];
+              $.each(summary_data.result, function (i, item) {
+                if (item.authors) {
+                  for (i = 0; i < item.authors.length; i++) {
+                    if (item.authors[i].name.toLowerCase() !== search_term.toLowerCase()) {
+                      var authorListed = $.grep(coauthorArray, function (e) {
+                        return e.name === item.authors[i].name;
+                      });
+                      if (authorListed.length === 0)
+                        coauthorArray.push(new Coauthor(item.authors[i].name, 1));
+                      else if (authorListed.length === 1)
+                        authorListed[0].number++;
+                    }
+                  }
+                } else
+                  console.log('Item' + item + ' doesnt have authors');
+              });
 
-                  changePagination();
-                  // unbind active links to results of search
-                  unbindPageBtn.unbind('click');
-                  prevBatchBtn.unbind('click');
-                  nextBatchBtn.unbind('click');
-                  $('.p1').attr('class', 'active unbindPage');
+              changePagination();
+              // unbind active links to results of search
+              unbindPageBtn.unbind('click');
+              prevBatchBtn.unbind('click');
+              nextBatchBtn.unbind('click');
+              $('.p1').addClass('active unbindPage');
 
-                  showData(summary_data, true);
+              showData(summary_data, true);
+              tree(summary_data, coauthorArray);
+
+              // force page movement on pagination clicks
+              unbindPageBtn.click(function(event) {
+                var pageID = $(this).attr('id');
+                var number = pageID.substring(1, pageID.length);
+                number = parseInt(number) - 1;
+                event.preventDefault();
+                if (currentPage !== number) {
+                  clearActive();
+                  $(this).attr('class', 'active unbindPage '.concat(pageID.toString()));
+                  currentPage = number;
+                  currentInc = LIST_AMOUNT * currentPage;
+                  showData(summary_data, false);
                   tree(summary_data, coauthorArray);
-
-                  // force page movement on pagination clicks
-                  unbindPageBtn.click(function () {
-                    var pageID = $(this).attr('id');
-                    var number = pageID.substring(1, pageID.length);
-                    number = parseInt(number) - 1;
-                    event.preventDefault();
-                    if (currentPage !== number) {
-                      clearActive();
-                      $(this).attr('class', 'active unbindPage '.concat(pageID.toString()));
-                      currentPage = number;
-                      currentInc = LIST_AMOUNT * currentPage;
-                      showData(summary_data, false);
-                      tree(summary_data, coauthorArray);
-                    }
-                  });
-                  prevBatchBtn.click(function () {
-                    event.preventDefault();
-                    if (currentBatch !== 0) {
-                      currentInc = 0;
-                      clearActive();
-                      currentBatch--;
-                      changePagination();
-                      search();
-                    }
-                  });
-                  nextBatchBtn.click(function () {
-                    event.preventDefault();
-                    if (currentBatch * 100 <= totalCount) {
-                      currentInc = 0;
-                      clearActive();
-                      currentBatch++;
-                      changePagination();
-                      search();
-                    }
-                  })
-                });
+                }
+              });
+              prevBatchBtn.click(function(event) {
+                event.preventDefault();
+                if (currentBatch !== 0) {
+                  currentInc = 0;
+                  clearActive();
+                  currentBatch--;
+                  changePagination();
+                  search();
+                }
+              });
+              nextBatchBtn.click(function(event) {
+                event.preventDefault();
+                if (currentBatch * 100 <= totalCount) {
+                  currentInc = 0;
+                  clearActive();
+                  currentBatch++;
+                  changePagination();
+                  search();
+                }
+              })
+            });
           }
         } else {
           $(".articles").html('<p>' + 'Error: cannot retrieve data.' + '</p>');
-          idPaginate.hide();
+          tablePaginate.hide();
         }
       })
     }
@@ -176,7 +187,7 @@ option to browse additional entries by the numbered links below the data table.
     // Display table of results
     function showData(data, page) {
       if(page) {
-        idPaginate.show();
+        tablePaginate.show();
         var size = data.result.uids.length;
         hider(size);
       }
@@ -206,14 +217,14 @@ option to browse additional entries by the numbered links below the data table.
           tablecontents += '<tr class="alt">';
 
         tablecontents += '<td>' + '<a href=\'http://www.ncbi.nlm.nih.gov/pubmed/' + currPaperId + '\'>' +
-            currPaper.title + '</a>' + '</td>';
+          currPaper.title + '</a>' + '</td>';
         tablecontents += '<td>' + currPaper.fulljournalname + '</td>';
         tablecontents += '<td>' + currPaper.pubdate + '</td>';
         tablecontents += '<td>' + author_list + '</td>';
         tablecontents += '</tr>';
       }
       tablecontents += '</table>';
-      
+
       $('.articles').html(tablecontents);
     }
 
@@ -256,13 +267,13 @@ option to browse additional entries by the numbered links below the data table.
       else
         $('.p2').show();
       if(currentBatch === 0)
-        $('.prevBatch').attr('class', 'disabled');
+        $('.prevBatch').addClass('disabled');
       else
-        $('.prevBatch').attr('class', '');
+        $('.prevBatch').removeClass('disabled');
       if((currentBatch + 1) * 100 > totalCount)
-        $('.nextBatch').attr('class', 'disabled');
+        $('.nextBatch').addClass('disabled');
       else
-        $('.nextBatch').attr('class', '');
+        $('.nextBatch').removeClass('disabled');
     }
 
     function clearActive() {
@@ -316,7 +327,7 @@ option to browse additional entries by the numbered links below the data table.
                   else
                     dataSet += ',';
                   dataSet += '{"name": "' + currPaper.authors[i].name + '", "size": ' +
-                      authorListed[0].number * 3000 + '}';
+                    authorListed[0].number * 3000 + '}';
                 }
               }
             }
@@ -331,79 +342,79 @@ option to browse additional entries by the numbered links below the data table.
 
       // obtain data set of co-authors
       var dataSet = makeDataSet();
-      
+
       // size of window graph is present
       var w = idChart.width(),
-          h = idChart.height(),
-          root;
+        h = idChart.height(),
+        root;
 
       var force = d3.layout.force()
-          .linkDistance(150)
-          .charge(-600)
-          .gravity(.05)
-          .size([w, h]);
+        .linkDistance(150)
+        .charge(-600)
+        .gravity(.05)
+        .size([w, h]);
 
       var vis = d3.select("#chart").append("svg:svg")
-          .attr("width", w)
-          .attr("height", h);
+        .attr("width", w)
+        .attr("height", h);
 
       root = jQuery.parseJSON(dataSet);
       update();
 
       function update() {
         var nodes = flatten(root),
-            links = d3.layout.tree().links(nodes);
+          links = d3.layout.tree().links(nodes);
 
         // Restart the force layout.
         force
-            .nodes(nodes)
-            .links(links)
-            .start();
+          .nodes(nodes)
+          .links(links)
+          .start();
 
         // Update the links…
         var link = vis.selectAll("line.link")
-            .data(links, function(d) { return d.target.id; });
+          .data(links, function(d) { return d.target.id; });
 
         // Enter any new links.
         link.enter().insert("svg:line", ".node")
-            .attr("class", "link")
-            .attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+          .attr("class", "link")
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
 
         // Exit any old links.
         link.exit().remove();
 
         // Update the nodes…
         var node = vis.selectAll("g.node")
-            .data(nodes, function(d) { return d.id; })
+          .data(nodes, function(d) { return d.id; })
 
         node.select("circle")
-            .style("fill", color);
+          .style("fill", color);
 
         // Enter any new nodes.
         var nodeEnter = node.enter().append("svg:g")
-            .attr("class", "node")
-            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-            .on("click", click)
-            .on("contextmenu", rightclick)
-            .on("dblclick", dblclick)
-            .on("contextmenu", rightclick)
-            .on("mouseover",mouseover)
-            .on("mouseout",mouseout)
-            .call(force.drag);
-            // Circle characteristics
+          .attr("class", "node")
+          .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+          .on("click", click)
+          .on("contextmenu", rightclick)
+          .on("dblclick", dblclick)
+          .on("contextmenu", rightclick)
+          .on("mouseover",mouseover)
+          .on("mouseout",mouseout)
+          .call(force.drag);
+        // Circle characteristics
         nodeEnter.append("svg:circle")
-            .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
-            .attr("original", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
-            .attr("store", function(d) { return 3 * Math.sqrt(d.size) / 10 || 4.5; })
-            .style("fill", color);
-            // Text characteristics
+          .attr("r", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+          .attr("original", function(d) { return Math.sqrt(d.size) / 10 || 4.5; })
+          .attr("store", function(d) { return 3 * Math.sqrt(d.size) / 10 || 4.5; })
+          .style("fill", color);
+        // Text characteristics
         nodeEnter.append("svg:text")
-            .attr("text-anchor", "middle")
-            .attr("dy", ".35em")
-            .text(function(d) { return d.name; });
+          .attr("text-anchor", "middle")
+          .attr("dy", ".35em")
+          .text(function(d) { return d.name; });
 
         // Exit any old nodes.
         node.exit().remove();
@@ -414,9 +425,9 @@ option to browse additional entries by the numbered links below the data table.
 
         force.on("tick", function() {
           link.attr("x1", function(d) { return d.source.x; })
-              .attr("y1", function(d) { return d.source.y; })
-              .attr("x2", function(d) { return d.target.x; })
-              .attr("y2", function(d) { return d.target.y; });
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
 
           node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
         });
@@ -438,15 +449,15 @@ option to browse additional entries by the numbered links below the data table.
         }
         update();
       }
-      // Double Click Feature: Focus of the graph. 
+      // Double Click Feature: Focus of the graph
       function dblclick(d) {
         currentBatch = 0;
         currentInc = 0;
         clearActive();
-        idInputSearch.val(d.name);
-        idSearch.trigger("click");
+        inputSearch.val(d.name);
+        buttonSearch.trigger("click");
       }
-      // Right Click Feature: Link to author.
+      // Right Click Feature: Link to author
       function rightclick(d) {
         var txt = encodeURIComponent(d.name);
         window.open("https://www.google.com/#q=" + txt);
@@ -473,43 +484,43 @@ option to browse additional entries by the numbered links below the data table.
         recurse(root);
         return nodes;
       }
-      //When mouse inside the node.
+      // When mouse inside the node
       function mouseover(d) {
         var newSize = d3.select(this).select("circle").attr("store");
         d3.select(this).select("circle").transition()
-            .duration(500)
-            .attr("r", newSize)
-            d3.select(this.parentNode.appendChild(this));
+          .duration(500)
+          .attr("r", newSize)
+        d3.select(this.parentNode.appendChild(this));
         d3.select(this).select("text").transition()
-            .duration(500)
-            .style("font-size", "30px")
+          .duration(500)
+          .style("font-size", "30px")
       }
-      // When mouse outside the node.
+      // When mouse outside the node
       function mouseout(d) {
         var newSize = d3.select(this).select("circle").attr("original");
         d3.select(this).select("circle").transition()
-            .duration(500)
-            .attr("r", newSize);
+          .duration(500)
+          .attr("r", newSize);
         d3.select(this).select("text").transition()
-            .duration(500)
-            .style("font-size", "10px")
+          .duration(500)
+          .style("font-size", "10px")
       }
 
     }
 
     // Run-time check
     var waitForFinalEvent = (function() {
-          var timers = {};
-          return function (callback, ms, uniqueId) {
-              if (!uniqueId) {
-                  uniqueId = 'Don\'t call this twice without a uniqueId';
-              }
-              if (timers[uniqueId]) {
-                  clearTimeout (timers[uniqueId]);
-              }
-              timers[uniqueId] = setTimeout(callback, ms);
-          };
-      })()
+      var timers = {};
+      return function (callback, ms, uniqueId) {
+        if (!uniqueId) {
+          uniqueId = 'Don\'t call this twice without a uniqueId';
+        }
+        if (timers[uniqueId]) {
+          clearTimeout (timers[uniqueId]);
+        }
+        timers[uniqueId] = setTimeout(callback, ms);
+      };
+    })()
 
   });
 })();
