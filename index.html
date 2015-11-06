@@ -225,7 +225,7 @@
         document.write(" | "+d.getFullYear()+" | "); </script>
         <a href="img/SOCR_Email.png"><img alt="SOCR Email"
                                           title="SOCR Email" src="img/SOCR_Email.png"
-                                          style="border: 0px solid ;"></a>
+                                          style="border: 0 solid ;"></a>
     </footer>
 </div>
 <!--/.fluid-container-->
@@ -268,22 +268,6 @@
 <script src="lib/jquery.xml2json.js" type="text/javascript" language="javascript"></script>
 <script src="lib/jquery.jsoneditor.min.js"></script>
 <script src="lib/d3.js"></script>
-<!--<script src="lib/d3.layout.js"></script>-->
 <script src="javascript/graph.js"></script>
-<!--<script src="javascript/d3.js1.25.0.js"></script>-->
-
-<script>
-    $(".inputSearch").keydown(function(event){
-        if(event.which == 13){
-            $(".searchButton").trigger("click");
-            event.preventDefault();
-        }
-    });
-
-    $(".chart").bind("contextmenu",function(e){
-        return false; //disable the context menu
-    });
-
-</script>
 </body>
 </html>
