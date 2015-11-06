@@ -34,6 +34,7 @@
   var inputSearch = $(".inputSearch");
   var buttonSearch = $(".searchButton");
   var idChart = $(".chart");
+  var iconLoadingBatch = $('.loadingBatch')
   var iconSearch = $('.searchIcon');
   var classSearch = "icon-search";
   var classRefresh = "icon-refresh icon-refresh-animate";
@@ -94,6 +95,9 @@
       };
 
       iconSearch.removeClass(classSearch).addClass(classRefresh);
+      iconLoadingBatch.toggleClass('hide');
+      tablePaginate.hide();
+
       // check if call is successful
       $.getJSON('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?', search_args, function(search_data) {
         if(search_data.esearchresult) {
@@ -111,6 +115,9 @@
             function(summary_data) {
 
               iconSearch.removeClass(classRefresh).addClass(classSearch);
+              iconLoadingBatch.toggleClass('hide');
+              tablePaginate.show();
+
               // for loop adding all coauthors to array
               coauthorArray = [];
               $.each(summary_data.result, function (i, item) {
@@ -388,12 +395,12 @@
 
         // Update the nodes…
         var node = vis.selectAll("g.node")
-          .data(nodes, function(d) { return d.id; })
+          .data(nodes, function(d) { return d.id; });
 
         node.select("circle")
           .style("fill", color);
 
-        // Enter any new nodes.
+        // Enter any new nodes
         var nodeEnter = node.enter().append("svg:g")
           .attr("class", "node")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
